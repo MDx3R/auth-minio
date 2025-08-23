@@ -18,7 +18,7 @@ from identity.infrastructure.database.sqlalchemy.repositories.user_repository im
 
 
 @pytest.mark.asyncio
-class TestSQLAlchemyUserRepository:
+class TestUserRepository:
     @pytest.fixture(autouse=True)
     def setup(
         self,
