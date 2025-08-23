@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from uuid import UUID
 
-from auth.application.dtos.models.descriptor import UserDescriptor
 from auth.application.dtos.models.token import TokenPair
+from identity.domain.value_objects.descriptor import UserDescriptor
 
 
 class ITokenIssuer(ABC):
