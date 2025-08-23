@@ -1,0 +1,46 @@
+[tool.ruff]
+
+target-version = "py311"
+
+line-length = 79
+
+fix = true
+
+src = ["src", "tests"]
+
+include = ["*.py", "*.pyi"]
+
+exclude = [
+    ".git",
+    ".venv",
+    "__pycache__",
+    "migrations",
+    "build",
+    "dist"
+]
+
+select = [
+    "E",      # pycodestyle (ошибки форматирования)
+    "F",      # pyflakes (переменные, импорты)
+    "B",      # flake8-bugbear (опасные конструкции)
+    "I",      # isort (импорты)
+    "UP",     # pyupgrade (новый синтаксис)
+    "C90",    # McCabe (сложность)
+    "N",      # pep8-naming (имена переменных, классов)
+    "PL",     # pylint совместимость
+    "RUF",    # собственные правила Ruff
+]
+
+ignore = ["D203", "D213", "E501"]  # D203 и D213 конфликтуют, E501 — заменяется Black
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.ruff.isort]
+combine-as-imports = true
+known-first-party = ["type"]
+lines-after-imports = 2
+
+[tool.pytest.ini_options]
+pythonpath = [".", "src"]
+addopts = "-s"
