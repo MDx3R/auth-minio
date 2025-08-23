@@ -10,6 +10,7 @@ from identity.domain.value_objects.descriptor import UserDescriptor
 class User:
     user_id: UUID
     username: str
+    password: str
 
     def descriptor(self) -> UserDescriptor:
         return UserDescriptor(self.user_id, self.username)
@@ -18,6 +19,9 @@ class User:
         if not self.username.strip():
             raise InvariantViolationError("Username cannot be empty")
 
+    def password_matches(self, password: str) -> bool:
+        return password == self.password
+
     @classmethod
-    def create(cls, user_id: UUID, username: str) -> Self:
-        return cls(user_id=user_id, username=username)
+    def create(cls, user_id: UUID, username: str, password: str) -> Self:
+        return cls(user_id=user_id, username=username, password=password)

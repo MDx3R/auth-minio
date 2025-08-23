@@ -12,3 +12,4 @@ class UserBase(Base):
 
     user_id: Mapped[UUID] = mapped_column(PGUUID, primary_key=True)
     username: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    password: Mapped[str] = mapped_column(String, nullable=False)

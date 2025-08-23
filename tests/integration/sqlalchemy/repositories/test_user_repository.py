@@ -46,7 +46,7 @@ class TestUserRepository:
         return user
 
     def _get_user(self) -> User:
-        return User(uuid4(), "test user")
+        return User(uuid4(), "test user", "hash")
 
     async def test_get_by_id_success(self):
         user = await self._add_user()
