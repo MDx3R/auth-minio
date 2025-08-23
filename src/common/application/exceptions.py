@@ -20,3 +20,25 @@ class NotFoundError(ApplicationError):
     def __init__(self, entity_id: UUID | str) -> None:
         super().__init__(f"Not found {entity_id}")
         self.entity_id = entity_id
+
+
+class RepositoryError(ApplicationError): ...
+
+
+class OptimisticLockError(RepositoryError):
+    def __init__(self, message: str = "Concurrent update"):
+        super().__init__(message)
+
+
+class IntegrityError(RepositoryError):
+    def __init__(self, message: str = "Data integrity violation"):
+        super().__init__(message)
+
+
+class DuplicateEntryError(RepositoryError):
+    def __init__(self, field: str, value: str):
+        self.field = field
+        self.value = value
+        super().__init__(
+            f"Duplicate entry for field '{field}': {value} already exists"
+        )
