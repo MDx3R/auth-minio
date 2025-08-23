@@ -1,0 +1,63 @@
+from datetime import datetime
+from unittest.mock import Mock
+from uuid import uuid4
+
+import pytest
+
+from auth.application.exceptions import TokenExpiredError, TokenRevokedError
+from auth.application.interfaces.repositories.token_repository import (
+    IRefreshTokenRepository,
+)
+from auth.infrastructure.services.jwt.token_issuer import JWTTokenIssuer
+from auth.infrastructure.services.jwt.token_refresher import JWTTokenRefresher
+from auth.infrastructure.services.jwt.token_revoker import JWTTokenRevoker
+from common.infrastructure.services.clock import FixedClock
+
+
+@pytest.mark.asyncio
+class TestJWTTokenIssuer:
+    @pytest.fixture(autouse=True)
+    def setup(self):
+        self.user_id = uuid4()
+
+        self.token_issuer = Mock(spec=JWTTokenIssuer)
+        self.token_revoker = Mock(spec=JWTTokenRevoker)
+        self.clock = FixedClock(datetime(2025, 7, 22))
+
+        self.pair = Mock()
+        self.token_issuer.issue_tokens.return_value = self.pair
+
+        self.token = Mock()
+        self.token.is_expired.return_value = False
+        self.token.is_revoked.return_value = False
+        self.token.user_id = self.user_id
+
+        self.refresh_token_repo = Mock(spec=IRefreshTokenRepository)
+        self.refresh_token_repo.get.return_value = self.token
+
+        self.refresher = JWTTokenRefresher(
+            self.token_issuer,
+            self.token_revoker,
+            self.clock,
+            self.refresh_token_repo,
+        )
+
+    async def test_refresh_valid_token(self):
+        result = await self.refresher.refresh_tokens("refresh-token")
+
+        assert result == self.pair
+
+        self.token_revoker.revoke_refresh_token.assert_awaited_once()
+        self.token_issuer.issue_tokens.assert_awaited_once_with(self.user_id)
+
+    async def test_refresh_expired_token_fails(self):
+        self.token.is_expired.return_value = True
+
+        with pytest.raises(TokenExpiredError):
+            await self.refresher.refresh_tokens("refresh-token")
+
+    async def test_refresh_revoked_token_fails(self):
+        self.token.is_revoked.return_value = True
+
+        with pytest.raises(TokenRevokedError):
+            await self.refresher.refresh_tokens("refresh-token")
