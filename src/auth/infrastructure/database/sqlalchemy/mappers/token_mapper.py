@@ -26,5 +26,4 @@ class TokenMapper:
             issued_at=token.issued_at,
             expires_at=token.expires_at,
             revoked=token.revoked,
-            version=token.version,
         )
