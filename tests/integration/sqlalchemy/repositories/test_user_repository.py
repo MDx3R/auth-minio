@@ -57,3 +57,31 @@ class TestUserRepository:
     async def test_get_by_id_not_found(self):
         with pytest.raises(UserNotFoundError):
             await self.user_repository.get_by_id(uuid4())
+
+    async def test_exists_by_username_true(self):
+        user = await self._add_user()
+        assert await self.user_repository.exists_by_username(user.username)
+
+    async def test_exists_by_username_false(self):
+        assert (
+            await self.user_repository.exists_by_username("nonexistent")
+            is False
+        )
+
+    async def test_get_by_usernamed_success(self):
+        user = await self._add_user()
+
+        result = await self.user_repository.get_by_username(user.username)
+
+        assert user == result
+
+    async def test_get_by_usernamed_nonexistent_fails(self):
+        with pytest.raises(UserNotFoundError):
+            await self.user_repository.get_by_username("nonexistent")
+
+    async def test_add_success(self):
+        user = self._get_user()
+
+        await self.user_repository.add(user)
+
+        assert await self._exists(user)

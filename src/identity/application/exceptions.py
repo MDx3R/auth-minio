@@ -1,8 +1,13 @@
-from uuid import UUID
-
-from common.application.exceptions import NotFoundError
+from common.application.exceptions import ApplicationError, NotFoundError
 
 
 class UserNotFoundError(NotFoundError):
-    def __init__(self, user_id: UUID):
-        super().__init__(user_id)
+    pass
+
+
+class UsernameAlreadyTakenError(ApplicationError):
+    def __init__(self, username: str):
+        super().__init__(
+            f"Username '{username}' is already taken by another user."
+        )
+        self.username = username
