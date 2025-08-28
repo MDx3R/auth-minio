@@ -58,7 +58,7 @@ class TestRegisterUserUseCase:
         )
         self.user_repository.add.assert_awaited_once()
 
-    async def test_register_email_already_taken(self):
+    async def test_register_username_already_taken(self):
         self.user_repository.exists_by_username.return_value = True
 
         with pytest.raises(UsernameAlreadyTakenError):

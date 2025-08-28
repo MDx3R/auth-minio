@@ -66,7 +66,7 @@ class TestLoginUseCase:
         )
         self.token_issuer.issue_tokens.assert_awaited_once_with(self.user_id)
 
-    async def test_login_invalid_email(self):
+    async def test_login_invalid_username(self):
         self.user_repository.exists_by_username.return_value = False
         with pytest.raises(InvalidUsernameError):
             await self.use_case.execute(self.command)
