@@ -30,7 +30,7 @@ class UserQueryController:
         response_model=UserResponse,
         dependencies=[Depends(require_authenticated)],
     )
-    async def login(
+    async def me(
         self, user: Annotated[UserDescriptor, Depends(get_descriptor)]
     ):
         result = await self.get_self_use_case.execute(
