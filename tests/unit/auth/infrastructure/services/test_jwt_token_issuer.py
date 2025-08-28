@@ -20,11 +20,11 @@ class TestJWTTokenIssuer:
     @pytest.fixture(autouse=True)
     def setup(self):
         self.config = AuthConfig(
-            SECRET_KEY="supersecretkey",
-            ALGORITHM="HS256",
-            ISSUER="my-service",
-            ACCESS_TOKEN_TTL=timedelta(minutes=15),
-            REFRESH_TOKEN_TTL=timedelta(days=7),
+            secret_key="supersecretkey",
+            algorithm="HS256",
+            issuer="my-service",
+            access_token_ttl=timedelta(minutes=15),
+            refresh_token_ttl=timedelta(days=7),
         )
         self.clock = FixedClock(datetime(2025, 7, 22))
 

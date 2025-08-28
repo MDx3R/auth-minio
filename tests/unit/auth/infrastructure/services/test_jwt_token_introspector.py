@@ -22,11 +22,11 @@ class TestJWTTokenIssuer:
     def setup(self):
         self.user_id = uuid4()
         self.config = AuthConfig(
-            SECRET_KEY="supersecretkey",
-            ALGORITHM="HS256",
-            ISSUER="my-service",
-            ACCESS_TOKEN_TTL=timedelta(minutes=15),
-            REFRESH_TOKEN_TTL=timedelta(days=7),
+            secret_key="supersecretkey",
+            algorithm="HS256",
+            issuer="my-service",
+            access_token_ttl=timedelta(minutes=15),
+            refresh_token_ttl=timedelta(days=7),
         )
         self.clock = FixedClock(
             datetime.now()
@@ -42,19 +42,19 @@ class TestJWTTokenIssuer:
 
     def create_valid_token(self):
         issued_at = self.clock.now().value
-        exp = issued_at + self.config.ACCESS_TOKEN_TTL
+        exp = issued_at + self.config.access_token_ttl
         return self.create_token(issued_at, exp)
 
     def create_token(self, iat: datetime, exp: datetime):
         return jwt.encode(
             {
                 "sub": str(self.user_id),
-                "iss": self.config.ISSUER,
+                "iss": self.config.issuer,
                 "iat": int(iat.timestamp()),
                 "exp": int(exp.timestamp()),
             },
-            self.config.SECRET_KEY,
-            algorithm=self.config.ALGORITHM,
+            self.config.secret_key,
+            algorithm=self.config.algorithm,
         )
 
     async def test_valid_token_extracts_user(self):
@@ -95,8 +95,8 @@ class TestJWTTokenIssuer:
     async def test_validate_missing_claims_fails(self):
         token = jwt.encode(
             {"sub": str(self.user_id)},
-            self.config.SECRET_KEY,
-            algorithm=self.config.ALGORITHM,
+            self.config.secret_key,
+            algorithm=self.config.algorithm,
         )
         with pytest.raises(InvalidTokenError):
             await self.introspector.validate(token)

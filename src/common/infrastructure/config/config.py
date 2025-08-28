@@ -92,8 +92,8 @@ class ConfigLoader:
                 self.override(value, overrides)  # type: ignore
                 continue
             for k, v in overrides.items():
-                if k == key:
-                    data[k] = v
+                if k.lower() == key.lower():
+                    data[key] = v
 
     def merge(self, data: dict[str, Any], overrides: dict[str, Any]):
         # NOTE: overrides values should follow data structure

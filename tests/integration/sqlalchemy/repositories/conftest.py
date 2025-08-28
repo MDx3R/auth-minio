@@ -51,11 +51,11 @@ def pg_container():
 @pytest.fixture(scope="session")
 def database_config(pg_container: PostgresContainer):
     return DatabaseConfig(
-        DB_NAME=pg_container.dbname,
-        DB_USER=pg_container.username,
-        DB_HOST=pg_container.get_container_host_ip(),
-        DB_PORT=pg_container.get_exposed_port(5432),
-        DB_PASSWORD=pg_container.password,
+        db_name=pg_container.dbname,
+        db_user=pg_container.username,
+        db_host=pg_container.get_container_host_ip(),
+        db_port=pg_container.get_exposed_port(5432),
+        db_password=pg_container.password,
     )
 
 

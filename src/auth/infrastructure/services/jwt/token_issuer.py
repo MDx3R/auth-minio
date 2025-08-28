@@ -41,10 +41,10 @@ class JWTTokenIssuer(ITokenIssuer):
 
     def issue_access_token(self, user_id: UUID) -> Token:
         issued_at = self.clock.now().value
-        expires_at = self.expires_at(issued_at, self.config.ACCESS_TOKEN_TTL)
+        expires_at = self.expires_at(issued_at, self.config.access_token_ttl)
 
         claims = TokenClaims.create(
-            user_id, self.config.ISSUER, issued_at, expires_at
+            user_id, self.config.issuer, issued_at, expires_at
         )
         token_str = self.create_jwt_token(claims)
 
@@ -59,7 +59,7 @@ class JWTTokenIssuer(ITokenIssuer):
 
     def issue_refresh_token(self, user_id: UUID) -> Token:
         issued_at = self.clock.now().value
-        expires_at = self.expires_at(issued_at, self.config.REFRESH_TOKEN_TTL)
+        expires_at = self.expires_at(issued_at, self.config.refresh_token_ttl)
 
         token_value = self.token_generator.secure(64)
 
@@ -83,8 +83,8 @@ class JWTTokenIssuer(ITokenIssuer):
         }
         return jwt.encode(
             payload,
-            self.config.SECRET_KEY,
-            algorithm=self.config.ALGORITHM,
+            self.config.secret_key,
+            algorithm=self.config.algorithm,
         )
 
     def expires_at(self, issued_at: datetime, ttl: timedelta) -> datetime:

@@ -45,9 +45,9 @@ class JWTTokenIntrospector(ITokenIntrospector):
         try:
             payload = jwt.decode(
                 token,
-                key=self.config.SECRET_KEY,
-                algorithms=[self.config.ALGORITHM],
-                issuer=self.config.ISSUER,
+                key=self.config.secret_key,
+                algorithms=[self.config.algorithm],
+                issuer=self.config.issuer,
                 options={"require": ["exp", "iat", "sub"]},
             )
 
