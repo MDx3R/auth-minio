@@ -1,7 +1,7 @@
 import os
 from argparse import ArgumentParser
 from pathlib import Path
-from typing import Any
+from typing import Any, Self
 
 import yaml
 from dotenv import load_dotenv
@@ -39,6 +39,10 @@ class AppConfig(BaseSettings):
         env_file_encoding="utf-8",
         extra="allow",
     )
+
+    @classmethod
+    def load(cls) -> Self:
+        return cls()  # pyright: ignore[reportCallIssue]
 
     @classmethod
     def settings_customise_sources(
