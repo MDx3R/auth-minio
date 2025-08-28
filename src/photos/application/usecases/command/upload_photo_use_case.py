@@ -41,9 +41,9 @@ class UploadPhotoUseCase(IUploadPhotoUseCase):
             mime=file_type.mime,
         )
 
-        await self.user_photo_repository.add(photo)
         await self.photo_repository.upload_photo(
             name=photo.name, mime=photo.mime, data=command.content
         )
+        await self.user_photo_repository.add(photo)
 
         return photo.name

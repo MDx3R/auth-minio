@@ -4,6 +4,7 @@ from uuid import uuid4
 
 import pytest
 
+from common.application.exceptions import RepositoryError
 from identity.domain.value_objects.descriptor import UserDescriptor
 from photos.application.dtos.command.upload_photo_command import (
     UploadPhotoCommand,
@@ -79,3 +80,19 @@ class TestUploadPhotoUseCase:
             name=self.photo_name, mime=self.mime, data=self.content
         )
         assert result == self.photo_name
+
+    async def test_execute_add_not_awaited_when_upload_fails(self):
+        # Arrange
+        self.photo_repository.upload_photo.side_effect = RepositoryError(
+            "error"
+        )
+
+        # Act
+        with pytest.raises(RepositoryError):
+            await self.use_case.execute(self.command, self.descriptor)
+
+        # Assert
+        self.photo_repository.upload_photo.assert_awaited_once_with(
+            name=self.photo_name, mime=self.mime, data=self.content
+        )
+        self.user_photo_repository.add.assert_not_awaited()
