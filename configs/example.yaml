@@ -1,10 +1,10 @@
 auth:
-  SECRET_KEY: "super-secret-auth"
+  secret_key: "super-secret-auth"
 
 db:
-  DB_NAME: "exampledb"
-  DB_USER: "user"
+  db_name: "exampledb"
+  db_user: "user"
 
 s3:
-  ACCESS_KEY: "minio"
-  SECRET_KEY: "super-secret-minio"
+  access_key: "minio"
+  secret_key: "super-secret-minio"

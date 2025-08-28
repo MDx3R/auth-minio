@@ -1,19 +1,19 @@
 auth:
-  SECRET_KEY: "super-secret"
-  ALGORITHM: "HS256"
-  ISSUER: "my-service"
-  ACCESS_TOKEN_TTL: 1800
-  REFRESH_TOKEN_TTL: 604800
+  secret_key: "super-secret"
+  algorithm: "HS256"
+  issuer: "my-service"
+  access_token_ttl: 1800
+  refresh_token_ttl: 604800
 
 db:
-  DB_NAME: "appdb"
-  DB_USER: "user"
-  DB_PASSWORD: "password"
-  DB_HOST: "localhost"
-  DB_PORT: 5432
+  db_name: "appdb"
+  db_user: "user"
+  db_password: "password"
+  db_host: "localhost"
+  db_port: 5432
 
 s3:
-  ENDPOINT: "http://localhost:9000"
-  ACCESS_KEY: "minio"
-  SECRET_KEY: "minio"
-  BUCKET_NAME: "photos"
+  endpoint: "http://localhost:9000"
+  access_key: "minio"
+  secret_key: "minio"
+  bucket_name: "photos"
