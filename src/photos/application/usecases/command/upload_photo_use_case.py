@@ -38,7 +38,9 @@ class UploadPhotoUseCase(IUploadPhotoUseCase):
         file_type = self.file_type_introspector.extract(command.content)
 
         photo = self.photo_factory.create(
-            descriptor.user_id, file_type.extension, file_type.mime
+            descriptor.user_id,
+            extension=file_type.extension,
+            mime=file_type.mime,
         )
 
         await self.user_photo_repository.add(photo)
