@@ -21,9 +21,6 @@ class User:
         if not self.password.strip():
             raise InvariantViolationError("Password cannot be empty")
 
-    def password_matches(self, password: str) -> bool:
-        return password == self.password
-
     @classmethod
     def create(cls, user_id: UUID, username: str, password: str) -> Self:
         return cls(user_id=user_id, username=username, password=password)
