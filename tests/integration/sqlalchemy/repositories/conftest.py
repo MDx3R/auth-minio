@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import (
 )
 from testcontainers.postgres import PostgresContainer  # type: ignore
 
+from auth.infrastructure.database.sqlalchemy.models.token_base import TokenBase
 from common.infrastructure.config.database_config import DatabaseConfig
 from common.infrastructure.database.sqlalchemy.executor import QueryExecutor
 from common.infrastructure.database.sqlalchemy.models.base import Base
@@ -15,6 +16,20 @@ from common.infrastructure.database.sqlalchemy.session_factory import (
     ISessionFactory,
 )
 from common.infrastructure.database.sqlalchemy.unit_of_work import UnitOfWork
+from identity.infrastructure.database.sqlalchemy.models.user_base import (
+    UserBase,
+)
+from photos.infrastructure.database.sqlalchemy.models.photo_base import (
+    PhotoBase,
+)
+
+
+# Needed for proper database configuration, e.g. fkeys and tables
+__models__: list[type[Base]] = [
+    UserBase,
+    TokenBase,
+    PhotoBase,
+]
 
 
 class StaticSessionFactory(ISessionFactory):
