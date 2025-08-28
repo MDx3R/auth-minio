@@ -32,11 +32,6 @@ from auth.presentation.http.fastapi.auth import (
 from auth.presentation.http.fastapi.controllers import auth_router
 
 
-@pytest.fixture
-def fastapi() -> FastAPI:
-    return FastAPI()
-
-
 @pytest.mark.asyncio
 class TestAuthController:
     @pytest.fixture(autouse=True)

@@ -18,6 +18,8 @@ class User:
     def __post_init__(self):
         if not self.username.strip():
             raise InvariantViolationError("Username cannot be empty")
+        if not self.password.strip():
+            raise InvariantViolationError("Password cannot be empty")
 
     def password_matches(self, password: str) -> bool:
         return password == self.password
