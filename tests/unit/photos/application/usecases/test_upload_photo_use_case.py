@@ -72,10 +72,10 @@ class TestUploadPhotoUseCase:
             self.content
         )
         self.photo_factory.create.assert_called_once_with(
-            self.descriptor.user_id, self.extension, self.mime
+            self.descriptor.user_id, extension=self.extension, mime=self.mime
         )
         self.user_photo_repository.add.assert_awaited_once_with(self.photo)
         self.photo_repository.upload_photo.assert_awaited_once_with(
-            self.photo_name, self.content
+            name=self.photo_name, mime=self.mime, data=self.content
         )
-        assert result == self.photo_id
+        assert result == self.photo_name

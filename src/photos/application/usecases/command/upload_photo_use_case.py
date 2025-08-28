@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from identity.domain.value_objects.descriptor import UserDescriptor
 from photos.application.dtos.command.upload_photo_command import (
     UploadPhotoCommand,
@@ -34,7 +32,7 @@ class UploadPhotoUseCase(IUploadPhotoUseCase):
 
     async def execute(
         self, command: UploadPhotoCommand, descriptor: UserDescriptor
-    ) -> UUID:
+    ) -> str:
         file_type = self.file_type_introspector.extract(command.content)
 
         photo = self.photo_factory.create(
@@ -44,6 +42,8 @@ class UploadPhotoUseCase(IUploadPhotoUseCase):
         )
 
         await self.user_photo_repository.add(photo)
-        await self.photo_repository.upload_photo(photo.name, command.content)
+        await self.photo_repository.upload_photo(
+            name=photo.name, mime=photo.mime, data=command.content
+        )
 
-        return photo.photo_id
+        return photo.name

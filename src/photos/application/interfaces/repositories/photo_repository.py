@@ -1,9 +1,14 @@
 from abc import ABC, abstractmethod
+from datetime import timedelta
 from typing import BinaryIO
 
 
 class IPhotoRepository(ABC):
     @abstractmethod
-    async def upload_photo(self, name: str, data: BinaryIO) -> None: ...
+    async def upload_photo(
+        self, name: str, mime: str, data: BinaryIO
+    ) -> None: ...
     @abstractmethod
-    async def download_photo(self, name: str) -> BinaryIO: ...
+    async def get_presigned_url(
+        self, name: str, expires_in: timedelta
+    ) -> str: ...
