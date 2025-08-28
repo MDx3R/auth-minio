@@ -44,6 +44,7 @@ class UploadPhotoUseCase(IUploadPhotoUseCase):
         await self.photo_repository.upload_photo(
             name=photo.name, mime=photo.mime, data=command.content
         )
+        # NOTE: Consider implementing event driven model with PUT presigned urls and storage side callbacks"
         await self.user_photo_repository.add(photo)
 
         return photo.name
