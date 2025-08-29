@@ -55,8 +55,8 @@ class PhotoCommandController:
             return StringResponse.from_str(result)
         except InvalidFileTypeError as exc:
             raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail={"error": type(exc).__name__, "detail": str(exc)},
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail={"error": type(exc).__name__, "message": str(exc)},
             )
 
 

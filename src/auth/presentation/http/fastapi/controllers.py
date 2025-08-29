@@ -72,7 +72,7 @@ class AuthController:
                 detail={
                     "error": "InvalidUsernameError",
                     "username": exc.username,
-                    "detail": str(exc),
+                    "message": str(exc),
                 },
             )
         except InvalidPasswordError as exc:
@@ -81,7 +81,7 @@ class AuthController:
                 detail={
                     "error": "InvalidPasswordError",
                     "user_id": str(exc.user_id),
-                    "detail": str(exc),
+                    "message": str(exc),
                 },
             )
 
@@ -123,6 +123,6 @@ class AuthController:
                 detail={
                     "error": "UsernameAlreadyTakenError",
                     "username": exc.username,
-                    "detail": str(exc),
+                    "message": str(exc),
                 },
             )
