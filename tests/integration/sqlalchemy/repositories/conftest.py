@@ -55,7 +55,7 @@ def database_config(pg_container: PostgresContainer):
         db_user=pg_container.username,
         db_host=pg_container.get_container_host_ip(),
         db_port=pg_container.get_exposed_port(5432),
-        db_password=pg_container.password,
+        db_pass=pg_container.password,
     )
 
 
