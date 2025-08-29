@@ -1,5 +1,6 @@
 import os
 from argparse import ArgumentParser
+from enum import Enum
 from pathlib import Path
 from typing import Any, Self
 
@@ -14,7 +15,16 @@ from pydantic_settings import (
 
 from common.infrastructure.config.auth_config import AuthConfig
 from common.infrastructure.config.database_config import DatabaseConfig
+from common.infrastructure.config.logger_config import LoggerConfig
 from common.infrastructure.config.s3_config import S3Config
+
+
+class RunEnvironment(str, Enum):
+    LOCAL = "local"
+    DEV = "dev"
+    STAGING = "staging"
+    PROD = "prod"
+    TEST = "test"
 
 
 class MergeSettingsSource(PydanticBaseSettingsSource):
@@ -29,9 +39,20 @@ class MergeSettingsSource(PydanticBaseSettingsSource):
 
 
 class AppConfig(BaseSettings):
+    env: RunEnvironment
     auth: AuthConfig
     db: DatabaseConfig
     s3: S3Config
+    logger: LoggerConfig
+
+    def masked_dict(self) -> dict[str, Any]:
+        return self.model_dump(
+            mode="json",
+            exclude={
+                "db": {"db_password"},
+                "auth": {"secret_key", "algorithm"},
+            },
+        )
 
     model_config = SettingsConfigDict(
         env_nested_delimiter="__",
