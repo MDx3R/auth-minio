@@ -1,14 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
-from collections.abc import Callable
-from typing import Any
 
-from common.infrastructure.server.fastapi.middleware.error_middleware import (
-    ErrorHandlingMiddleware,
-)
-from common.infrastructure.server.fastapi.middleware.logging_middleware import (
-    LoggingMiddleware,
-)
 from common.infrastructure.server.fastapi.server import FastAPIServer
 
 
@@ -23,8 +15,7 @@ class App(IApp):
         self.server = server
 
     def configure(self) -> None:
-        self.server.use_middleware(ErrorHandlingMiddleware)
-        self.server.use_middleware(LoggingMiddleware, logger=self.logger)
+        pass
 
     def add_app(self, *apps: IApp) -> None:
         for app in apps:
@@ -32,10 +23,6 @@ class App(IApp):
             self.logger.info(
                 f"Sub-application '{app.__class__.__name__}' registered successfully"
             )
-
-    def add_shutdown_rule(self, *rules: Callable[..., Any]) -> None:
-        for rule in rules:
-            self.server.on_tear_down(rule)
 
     def run(self) -> None:
         import uvicorn  # noqa: PLC0415

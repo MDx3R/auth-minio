@@ -6,11 +6,6 @@ from fastapi import FastAPI, Request, Response, status
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from auth.application.exceptions import (
-    InvalidTokenError,
-    TokenExpiredError,
-    TokenRevokedError,
-)
 from common.application.exceptions import (
     ApplicationError,
     DuplicateEntryError,
@@ -23,10 +18,16 @@ from common.domain.exceptions import DomainError
 
 class IHTTPErrorHandler(ABC):
     @abstractmethod
+    def can_handle(self, exc: Exception) -> bool: ...
+
+    @abstractmethod
     def handle(self, request: Request, exc: Exception) -> JSONResponse: ...
 
 
 class DomainErrorHandler(IHTTPErrorHandler):
+    def can_handle(self, exc: Exception) -> bool:
+        return isinstance(exc, DomainError)
+
     def handle(self, request: Request, exc: Exception) -> JSONResponse:
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -36,11 +37,11 @@ class DomainErrorHandler(IHTTPErrorHandler):
 
 class ApplicationErrorHandler(IHTTPErrorHandler):
     ERROR_STATUS_MAP: ClassVar[dict[type[Exception], int]] = {
-        NotFoundError: status.HTTP_404_NOT_FOUND,
-        TokenExpiredError: status.HTTP_401_UNAUTHORIZED,
-        TokenRevokedError: status.HTTP_401_UNAUTHORIZED,
-        InvalidTokenError: status.HTTP_401_UNAUTHORIZED,
+        NotFoundError: status.HTTP_404_NOT_FOUND
     }
+
+    def can_handle(self, exc: Exception) -> bool:
+        return isinstance(exc, ApplicationError)
 
     def handle(self, request: Request, exc: Exception) -> JSONResponse:
         status_code = self.ERROR_STATUS_MAP.get(
@@ -57,6 +58,9 @@ class RepositoryErrorHandler(IHTTPErrorHandler):
         DuplicateEntryError: status.HTTP_409_CONFLICT,
         OptimisticLockError: status.HTTP_409_CONFLICT,
     }
+
+    def can_handle(self, exc: Exception) -> bool:
+        return isinstance(exc, RepositoryError)
 
     def handle(self, request: Request, exc: Exception) -> JSONResponse:
         if isinstance(exc, OptimisticLockError):
@@ -81,14 +85,9 @@ class RepositoryErrorHandler(IHTTPErrorHandler):
 
 
 class ErrorHandlingMiddleware(BaseHTTPMiddleware):
-    HANDLERS: ClassVar[dict[type[Exception], IHTTPErrorHandler]] = {
-        DomainError: DomainErrorHandler(),
-        ApplicationError: ApplicationErrorHandler(),
-        RepositoryError: RepositoryErrorHandler(),
-    }
-
-    def __init__(self, app: FastAPI):
+    def __init__(self, app: FastAPI, handlers: list[IHTTPErrorHandler]):
         super().__init__(app)
+        self.handlers = handlers
 
     async def dispatch(
         self,
@@ -99,8 +98,8 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
             response = await call_next(request)
             return response
         except Exception as exc:
-            for exc_type, handler in self.HANDLERS.items():
-                if isinstance(exc, exc_type):
+            for handler in self.handlers:
+                if handler.can_handle(exc):
                     return handler.handle(request, exc)
 
             return JSONResponse(

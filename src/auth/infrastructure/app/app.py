@@ -19,8 +19,14 @@ from auth.infrastructure.di.container.container import (
     AuthContainer,
     TokenContainer,
 )
+from auth.infrastructure.server.fastapi.middleware.token_error_middleware import (
+    TokenErrorHandler,
+)
 from auth.presentation.http.fastapi.controllers import auth_router
 from common.infrastructure.app.http_app import IHTTPApp
+from common.infrastructure.server.fastapi.middleware.error_middleware import (
+    ErrorHandlingMiddleware,
+)
 from common.infrastructure.server.fastapi.server import FastAPIServer
 from identity.application.interfaces.usecases.query.get_self_use_case import (
     IGetSelfUseCase,
@@ -73,6 +79,16 @@ class TokenApp(IHTTPApp):
     ) -> None:
         self.container = container
         self.server = server
+
+    def configure(self) -> None:
+        super().configure()
+        self.configure_middleware()
+
+    def configure_middleware(self) -> None:
+        self.server.use_middleware(
+            ErrorHandlingMiddleware,
+            handlers=[TokenErrorHandler()],
+        )
 
     def configure_dependencies(self) -> None:
         self.server.override_dependency(
