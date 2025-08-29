@@ -5,7 +5,7 @@ from common.infrastructure.config.config import AppConfig
 
 def log_config(logger: logging.Logger, cfg: AppConfig) -> None:
     logger.info(
-        "Configuration loaded",
+        "configuration loaded",
         extra={
             "extra": {
                 "env": cfg.env,
