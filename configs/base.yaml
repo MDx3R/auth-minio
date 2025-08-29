@@ -13,7 +13,7 @@ logger:
 db:
   db_name: "appdb"
   db_user: "user"
-  db_password: "password"
+  db_pass: "password"
   db_host: "localhost"
   db_port: 5432
 
