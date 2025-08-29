@@ -1,6 +1,15 @@
 import logging
 from abc import ABC, abstractmethod
 
+from common.infrastructure.server.fastapi.middleware.error_middleware import (
+    ApplicationErrorHandler,
+    DomainErrorHandler,
+    ErrorHandlingMiddleware,
+    RepositoryErrorHandler,
+)
+from common.infrastructure.server.fastapi.middleware.logging_middleware import (
+    LoggingMiddleware,
+)
 from common.infrastructure.server.fastapi.server import FastAPIServer
 
 
@@ -15,7 +24,15 @@ class App(IApp):
         self.server = server
 
     def configure(self) -> None:
-        pass
+        self.server.use_middleware(LoggingMiddleware, logger=self.logger)
+        self.server.use_middleware(
+            ErrorHandlingMiddleware,
+            handlers=[
+                RepositoryErrorHandler(),
+                ApplicationErrorHandler(),
+                DomainErrorHandler(),
+            ],
+        )
 
     def add_app(self, *apps: IApp) -> None:
         for app in apps:
