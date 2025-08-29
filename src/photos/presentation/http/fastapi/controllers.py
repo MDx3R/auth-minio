@@ -1,6 +1,13 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query, UploadFile
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    Query,
+    UploadFile,
+    status,
+)
 from fastapi_utils.cbv import cbv
 
 from auth.presentation.http.fastapi.auth import (
@@ -15,6 +22,7 @@ from photos.application.dtos.command.upload_photo_command import (
 from photos.application.dtos.query.get_presigned_url_query import (
     GetPresignedUrlQuery,
 )
+from photos.application.exceptions import InvalidFileTypeError
 from photos.application.interfaces.usecases.command.upload_photo_use_case import (
     IUploadPhotoUseCase,
 )
@@ -40,10 +48,16 @@ class PhotoCommandController:
         file: UploadFile,
         user: Annotated[UserDescriptor, Depends(get_descriptor)],
     ):
-        result = await self.upload_photo_use_case.execute(
-            UploadPhotoCommand(file.file), user
-        )
-        return StringResponse.from_str(result)
+        try:
+            result = await self.upload_photo_use_case.execute(
+                UploadPhotoCommand(file.file), user
+            )
+            return StringResponse.from_str(result)
+        except InvalidFileTypeError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail={"error": type(exc).__name__, "detail": str(exc)},
+            )
 
 
 query_router = APIRouter()

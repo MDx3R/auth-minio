@@ -1,7 +1,7 @@
 from dataclasses import asdict
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Form, status
+from fastapi import APIRouter, Depends, Form, HTTPException, status
 from fastapi_utils.cbv import cbv
 
 from auth.application.dtos.commands.login_command import LoginCommand
@@ -11,6 +11,10 @@ from auth.application.dtos.commands.refresh_token_command import (
 )
 from auth.application.dtos.commands.register_user_command import (
     RegisterUserCommand,
+)
+from auth.application.exceptions import (
+    InvalidPasswordError,
+    InvalidUsernameError,
 )
 from auth.application.interfaces.usecases.command.login_use_case import (
     ILoginUseCase,
@@ -34,6 +38,7 @@ from auth.presentation.http.fastapi.auth import (
     require_unauthenticated,
 )
 from common.presentation.http.dto.response import IDResponse
+from identity.application.exceptions import UsernameAlreadyTakenError
 
 
 auth_router = APIRouter()
@@ -56,10 +61,29 @@ class AuthController:
         username: str = Form(...),
         password: str = Form(...),
     ):
-        result = await self.login_use_case.execute(
-            LoginCommand(username=username, password=password)
-        )
-        return AuthTokensResponse(**asdict(result))
+        try:
+            result = await self.login_use_case.execute(
+                LoginCommand(username=username, password=password)
+            )
+            return AuthTokensResponse(**asdict(result))
+        except InvalidUsernameError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail={
+                    "error": "InvalidUsername",
+                    "username": exc.username,
+                    "detail": str(exc),
+                },
+            )
+        except InvalidPasswordError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail={
+                    "error": "InvalidPassword",
+                    "user_id": str(exc.user_id),
+                    "detail": str(exc),
+                },
+            )
 
     @auth_router.post(
         "/logout",
@@ -86,9 +110,19 @@ class AuthController:
         dependencies=[Depends(require_unauthenticated)],
     )
     async def register(self, request: RegisterUserRequest):
-        result = await self.register_user_use_case.execute(
-            RegisterUserCommand(
-                username=request.username, password=request.password
+        try:
+            result = await self.register_user_use_case.execute(
+                RegisterUserCommand(
+                    username=request.username, password=request.password
+                )
             )
-        )
-        return IDResponse.from_uuid(result)
+            return IDResponse.from_uuid(result)
+        except UsernameAlreadyTakenError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail={
+                    "error": "UsernameAlreadyTaken",
+                    "username": exc.username,
+                    "detail": str(exc),
+                },
+            )
