@@ -70,7 +70,7 @@ class AuthController:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail={
-                    "error": "InvalidUsername",
+                    "error": "InvalidUsernameError",
                     "username": exc.username,
                     "detail": str(exc),
                 },
@@ -79,7 +79,7 @@ class AuthController:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail={
-                    "error": "InvalidPassword",
+                    "error": "InvalidPasswordError",
                     "user_id": str(exc.user_id),
                     "detail": str(exc),
                 },
@@ -121,7 +121,7 @@ class AuthController:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail={
-                    "error": "UsernameAlreadyTaken",
+                    "error": "UsernameAlreadyTakenError",
                     "username": exc.username,
                     "detail": str(exc),
                 },
