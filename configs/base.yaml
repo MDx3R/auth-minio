@@ -5,6 +5,10 @@ auth:
   access_token_ttl: 1800
   refresh_token_ttl: 604800
 
+logger:
+  level: "INFO"
+  format: "json"
+
 db:
   db_name: "appdb"
   db_user: "user"
