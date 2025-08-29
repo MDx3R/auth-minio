@@ -19,7 +19,7 @@ class LoggerConfig(BaseModel):
     level: LoggingLevelEnum = LoggingLevelEnum.INFO
     format: Literal["json", "text"] = "json"
 
-    @field_validator("LEVEL", mode="before")
+    @field_validator("level", mode="before")
     @classmethod
     def parse_level(cls, v: Any):
         if isinstance(v, str):

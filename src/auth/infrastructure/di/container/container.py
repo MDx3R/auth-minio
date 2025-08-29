@@ -37,7 +37,7 @@ class TokenContainer(containers.DeclarativeContainer):
     refresh_token_repository = providers.Singleton(
         RefreshTokenRepository, query_executor
     )
-    user_desctiptor_repository = providers.Singleton(
+    user_descriptor_repository = providers.Singleton(
         UserDescriptorRepository, user_repository
     )
 
@@ -64,7 +64,7 @@ class TokenContainer(containers.DeclarativeContainer):
     token_introspector = providers.Singleton(
         JWTTokenIntrospector,
         config=auth_config,
-        user_repository=user_repository,
+        user_descriptor_repository=user_descriptor_repository,
         clock=clock,
     )
 

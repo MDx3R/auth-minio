@@ -29,7 +29,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
             "query_params": dict(request.query_params),
         }
 
-        self.logger.info("Incoming request", extra={"extra": extra})
+        self.logger.info("incoming request", extra={"extra": extra})
 
         try:
             response: Response = await call_next(request)
@@ -40,12 +40,12 @@ class LoggingMiddleware(BaseHTTPMiddleware):
                     "process_time_ms": f"{process_time:.2f}",
                 }
             )
-            self.logger.info("Request completed", extra={"extra": extra})
+            self.logger.info("request completed", extra={"extra": extra})
             return response
 
         except Exception as e:
             extra["exception"] = str(e)
             self.logger.exception(
-                "Unhandled exception", extra={"extra": extra}
+                "unhandled exception", extra={"extra": extra}
             )
             raise

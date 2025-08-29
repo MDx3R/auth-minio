@@ -3,12 +3,6 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable
 from typing import Any
 
-from auth.application.interfaces.services.token_service import (
-    ITokenIntrospector,
-)
-from auth.infrastructure.di.container.container import TokenContainer
-from common.infrastructure.config.config import AppConfig
-from common.infrastructure.di.container.container import CommonContainer
 from common.infrastructure.server.fastapi.middleware.error_middleware import (
     ErrorHandlingMiddleware,
 )
@@ -24,29 +18,13 @@ class IApp(ABC):
 
 
 class App(IApp):
-    def __init__(
-        self,
-        config: AppConfig,
-        logger: logging.Logger,
-        container: CommonContainer,
-        server: FastAPIServer,
-    ) -> None:
-        self.config = config
+    def __init__(self, logger: logging.Logger, server: FastAPIServer) -> None:
         self.logger = logger
-        self.container = container
         self.server = server
 
-    def configure(self):
+    def configure(self) -> None:
         self.server.use_middleware(ErrorHandlingMiddleware)
         self.server.use_middleware(LoggingMiddleware, logger=self.logger)
-
-    def configure_auth_dependencies(
-        self, token_container: TokenContainer
-    ) -> None:
-        self.server.override_dependency(
-            ITokenIntrospector, token_container.token_introspector()
-        )
-        self.logger.debug("Auth dependencies configured")
 
     def add_app(self, *apps: IApp) -> None:
         for app in apps:
@@ -59,7 +37,7 @@ class App(IApp):
         for rule in rules:
             self.server.on_tear_down(rule)
 
-    def run(self):
+    def run(self) -> None:
         import uvicorn  # noqa: PLC0415
 
         self.logger.info(
@@ -69,7 +47,7 @@ class App(IApp):
         uvicorn.run(
             self.server.get_app(), host="0.0.0.0", port=8000
         )  # TODO: Add config
-        self.logger.info("Uvicorn stopped")
+        self.logger.info("uvicorn stopped")
 
     def get_server(self) -> FastAPIServer:
         return self.server

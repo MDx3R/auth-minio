@@ -45,12 +45,12 @@ class FastAPIServer:
     @asynccontextmanager
     async def _lifespan(self, app: FastAPI):
         try:
-            self.logger.info("Server startup begins")
+            self.logger.info("server startup begins")
             for handler in self._startup_handlers:
                 await handler()
             yield
         finally:
-            self.logger.info("Server shutdown begins")
+            self.logger.info("server shutdown begins")
             for handler in reversed(self._shutdown_handlers):
                 try:
                     await handler()
@@ -66,7 +66,7 @@ class FastAPIServer:
         self, middleware: type[BaseHTTPMiddleware], **options: Any
     ):
         self._app.add_middleware(middleware, **options)
-        self.logger.info("Middleware %s added", middleware)
+        self.logger.info("middleware %s added", middleware)
 
     def include_cors_middleware(self):
         self._app.add_middleware(
@@ -84,10 +84,10 @@ class FastAPIServer:
             prefix=prefix,
             tags=tags,  # pyright: ignore[reportArgumentType]
         )
-        self.logger.info(f"Router registered: prefix={prefix}, tags={tags}")
+        self.logger.info(f"router registered: prefix={prefix}, tags={tags}")
 
     def override_dependency(
         self, interface: type[DEPENDENCY], dependency: DEPENDENCY
     ):
         self._app.dependency_overrides[interface] = lambda: dependency
-        self.logger.debug(f"Dependency overridden: {interface.__name__}")
+        self.logger.debug(f"dependency overridden: {interface.__name__}")

@@ -19,7 +19,7 @@ from photos.infrastructure.services.file_type_introspector import (
 )
 
 
-class IdentityContainer(containers.DeclarativeContainer):
+class PhotoContainer(containers.DeclarativeContainer):
     presigned_url_expiration_delta = providers.Dependency()
     allowed_extensions = providers.Dependency()
 
