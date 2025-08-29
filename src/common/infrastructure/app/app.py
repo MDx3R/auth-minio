@@ -24,6 +24,7 @@ class App(IApp):
         self.server = server
 
     def configure(self) -> None:
+        self.server.include_cors_middleware()
         self.server.use_middleware(LoggingMiddleware, logger=self.logger)
         self.server.use_middleware(
             ErrorHandlingMiddleware,
