@@ -1,5 +1,6 @@
 from typing import Self
 
+from sqlalchemy import MetaData, text
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     async_sessionmaker,
@@ -35,6 +36,17 @@ class Database:
 
     def get_session_maker(self) -> MAKER:
         return self._session_maker
+
+    async def truncate_database(self, metadata: MetaData) -> None:
+        async with self._engine.begin() as conn:
+            table_names = [table.name for table in metadata.sorted_tables]
+            if not table_names:
+                return
+
+            quoted_tables = ", ".join(f'"{name}"' for name in table_names)
+            stmt = text(f"TRUNCATE {quoted_tables} CASCADE;")
+
+            await conn.execute(stmt)
 
     async def shutdown(self) -> None:
         await self._engine.dispose()

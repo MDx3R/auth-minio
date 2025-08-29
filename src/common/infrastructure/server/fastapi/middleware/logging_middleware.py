@@ -33,6 +33,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         try:
             response: Response = await call_next(request)
         except Exception:
+            # NOTE: Normally shouldn't be invoked
             process_time = (time.time() - start_time) * 1000
             extra.update(
                 {

@@ -81,13 +81,14 @@ def main():
     )
 
     logger.info("building application...")
-    app = App(logger, server)
-    app.configure()
+
+    app = App(config, logger, server)
     app.add_app(
         TokenApp(token_container, server),
         AuthApp(auth_container, identity_container, server),
         PhotosApp(photo_container, server),
     )
+    app.configure()
 
     logger.info("application initialized")
 

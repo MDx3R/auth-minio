@@ -94,6 +94,7 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
         request: Request,
         call_next: Callable[[Request], Awaitable[Response]],
     ) -> Response:
+
         try:
             response = await call_next(request)
             return response
