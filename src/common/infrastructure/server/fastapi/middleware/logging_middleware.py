@@ -19,7 +19,6 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         call_next: Callable[[Request], Awaitable[Response]],
     ) -> Response:
         request_id = str(uuid.uuid4())
-
         start_time = time.time()
         extra: dict[str, Any] = {
             "request_id": request_id,
@@ -33,19 +32,41 @@ class LoggingMiddleware(BaseHTTPMiddleware):
 
         try:
             response: Response = await call_next(request)
+        except Exception:
             process_time = (time.time() - start_time) * 1000
+            extra.update(
+                {
+                    "process_time_ms": f"{process_time:.2f}",
+                }
+            )
+
+            self.logger.exception(
+                "request failed",
+                extra={"extra": extra},
+            )
+            raise
+
+        process_time = (time.time() - start_time) * 1000
+        if response.status_code >= 400:
             extra.update(
                 {
                     "status_code": response.status_code,
                     "process_time_ms": f"{process_time:.2f}",
                 }
             )
-            self.logger.info("request completed", extra={"extra": extra})
+            self.logger.error(
+                "request completed with error status",
+                extra={"extra": extra},
+            )
             return response
 
-        except Exception as e:
-            extra["exception"] = str(e)
-            self.logger.exception(
-                "unhandled exception", extra={"extra": extra}
-            )
-            raise
+        extra.update(
+            {
+                "status_code": response.status_code,
+                "process_time_ms": f"{process_time:.2f}",
+            }
+        )
+        self.logger.info(
+            "request completed successfully", extra={"extra": extra}
+        )
+        return response
