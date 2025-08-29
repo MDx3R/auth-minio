@@ -1,3 +1,4 @@
+env: local
 auth:
   secret_key: "super-secret"
   algorithm: "HS256"
@@ -17,7 +18,7 @@ db:
   db_port: 5432
 
 s3:
-  endpoint: "http://localhost:9000"
+  endpoint: "localhost:9000"
   access_key: "minio"
   secret_key: "minio"
   bucket_name: "photos"
