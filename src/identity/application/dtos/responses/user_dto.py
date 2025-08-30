@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Self
 from uuid import UUID
 
-from identity.domain.entity.user import User
+from identity.application.read_models.user_read_model import UserReadModel
 
 
 @dataclass(frozen=True)
@@ -11,5 +11,5 @@ class UserDTO:
     username: str
 
     @classmethod
-    def from_user(cls, user: User) -> Self:
+    def from_user(cls, user: UserReadModel) -> Self:
         return cls(user_id=user.user_id, username=user.username)

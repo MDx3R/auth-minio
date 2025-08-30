@@ -7,13 +7,13 @@ from identity.application.dtos.queries.get_user_be_id_query import (
     GetUserByIdQuery,
 )
 from identity.application.dtos.responses.user_dto import UserDTO
-from identity.application.interfaces.repositories.user_repository import (
-    IUserRepository,
+from identity.application.interfaces.repositories.user_read_repository import (
+    IUserReadRepository,
 )
+from identity.application.read_models.user_read_model import UserReadModel
 from identity.application.usecases.query.get_self_use_case import (
     GetSelfUseCase,
 )
-from identity.domain.entity.user import User
 
 
 @pytest.mark.asyncio
@@ -21,9 +21,9 @@ class TestGetSelfUseCase:
     @pytest.fixture(autouse=True)
     def setup(self):
         self.user_id = uuid4()
-        self.user = User(self.user_id, "test user", "hash")
+        self.user = UserReadModel(self.user_id, "test user")
 
-        self.user_repository = Mock(spec=IUserRepository)
+        self.user_repository = Mock(spec=IUserReadRepository)
         self.user_repository.get_by_id.return_value = self.user
 
         self.command = GetUserByIdQuery(self.user_id)

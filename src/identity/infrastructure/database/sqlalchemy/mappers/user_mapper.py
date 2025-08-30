@@ -1,3 +1,4 @@
+from identity.application.read_models.user_read_model import UserReadModel
 from identity.domain.entity.user import User
 from identity.infrastructure.database.sqlalchemy.models.user_base import (
     UserBase,
@@ -20,3 +21,9 @@ class UserMapper:
             username=user.username,
             password=user.password,
         )
+
+
+class UserReadMapper:
+    @classmethod
+    def to_read(cls, base: UserBase) -> UserReadModel:
+        return UserReadModel(user_id=base.user_id, username=base.username)
