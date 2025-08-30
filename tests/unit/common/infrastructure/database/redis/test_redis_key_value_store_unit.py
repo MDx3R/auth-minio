@@ -1,5 +1,5 @@
 from unittest.mock import AsyncMock, Mock
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import pytest
 from redis import RedisError
@@ -9,10 +9,7 @@ from common.infrastructure.database.redis.repositories.key_value_store import (
     RedisKeyValueStore,
 )
 from common.infrastructure.exceptions import SerializationError
-from common.infrastructure.serializers.marshmallow.serializer import (
-    MarshmallowSerializer,
-)
-from identity.domain.value_objects.descriptor import UserDescriptor
+from common.infrastructure.serializers.serializer import ISerializer
 
 
 @pytest.mark.asyncio
@@ -20,35 +17,29 @@ class TestRedisKeyValueStoreUnit:
     @pytest.fixture(autouse=True)
     def setup(self):
         self.redis_client = AsyncMock()
-        self.serializer = Mock(spec=MarshmallowSerializer)
+        self.serializer = Mock(spec=ISerializer)
 
-        self.store = RedisKeyValueStore[UserDescriptor](
+        self.store = RedisKeyValueStore[UUID](
             redis_client=self.redis_client,
             serializer=self.serializer,
             namespace="test",
         )
-        self.user_id = uuid4()
-        self.descriptor = UserDescriptor(
-            user_id=self.user_id, username="testuser"
-        )
+        self.id = uuid4()
 
-        self.key = self.store.make_key(str(self.user_id))
-        self.serialized_data = (
-            '{"user_id": "' + str(self.user_id) + '", "username": "testuser"}'
-        )
+        self.key = self.store.make_key(str(self.id))
+        self.serialized_data = f"'{self.id!s}'"
 
     async def test_get_success(self):
         # Arrange
         self.redis_client.get.return_value = self.serialized_data
-        self.serializer.deserialize.return_value = self.descriptor
+        self.serializer.deserialize.return_value = self.id
 
         # Act
-        result = await self.store.get(str(self.user_id))
+        result = await self.store.get(str(self.id))
 
         # Assert
-        assert result == self.descriptor
-        assert result.user_id == self.descriptor.user_id
-        assert result.username == self.descriptor.username
+        assert result == self.id
+
         self.redis_client.get.assert_awaited_once_with(self.key)
         self.serializer.deserialize.assert_called_once_with(
             self.serialized_data
@@ -60,10 +51,10 @@ class TestRedisKeyValueStoreUnit:
         self.redis_client.set.return_value = True
 
         # Act
-        await self.store.set(str(self.user_id), self.descriptor, expire=300)
+        await self.store.set(str(self.id), self.id, expire=300)
 
         # Assert
-        self.serializer.serialize.assert_called_once_with(self.descriptor)
+        self.serializer.serialize.assert_called_once_with(self.id)
         self.redis_client.set.assert_awaited_once_with(
             self.key, self.serialized_data, ex=300
         )
@@ -74,10 +65,10 @@ class TestRedisKeyValueStoreUnit:
         self.redis_client.set.return_value = True
 
         # Act
-        await self.store.set(str(self.user_id), self.descriptor)
+        await self.store.set(str(self.id), self.id)
 
         # Assert
-        self.serializer.serialize.assert_called_once_with(self.descriptor)
+        self.serializer.serialize.assert_called_once_with(self.id)
         self.redis_client.set.assert_awaited_once_with(
             self.key, self.serialized_data, ex=None
         )
@@ -93,7 +84,7 @@ class TestRedisKeyValueStoreUnit:
         with pytest.raises(
             RepositoryError, match="Unnable to retrive value cache"
         ):
-            await self.store.get(str(self.user_id))
+            await self.store.get(str(self.id))
 
         self.redis_client.get.assert_awaited_once_with(self.key)
         self.serializer.deserialize.assert_called_once_with(
@@ -110,10 +101,8 @@ class TestRedisKeyValueStoreUnit:
         with pytest.raises(
             RepositoryError, match="Unnable to save value in cache"
         ):
-            await self.store.set(
-                str(self.user_id), self.descriptor, expire=300
-            )
-        self.serializer.serialize.assert_called_once_with(self.descriptor)
+            await self.store.set(str(self.id), self.id, expire=300)
+        self.serializer.serialize.assert_called_once_with(self.id)
         self.redis_client.set.assert_not_awaited()
 
     async def test_get_with_redis_error(self):
@@ -126,7 +115,7 @@ class TestRedisKeyValueStoreUnit:
         with pytest.raises(
             RepositoryError, match="Unnable to retrive value cache"
         ):
-            await self.store.get(str(self.user_id))
+            await self.store.get(str(self.id))
         self.redis_client.get.assert_awaited_once_with(self.key)
         self.serializer.deserialize.assert_not_called()
 
@@ -141,10 +130,8 @@ class TestRedisKeyValueStoreUnit:
         with pytest.raises(
             RepositoryError, match="Unnable to save value in cache"
         ):
-            await self.store.set(
-                str(self.user_id), self.descriptor, expire=300
-            )
-        self.serializer.serialize.assert_called_once_with(self.descriptor)
+            await self.store.set(str(self.id), self.id, expire=300)
+        self.serializer.serialize.assert_called_once_with(self.id)
         self.redis_client.set.assert_awaited_once_with(
             self.key, self.serialized_data, ex=300
         )
