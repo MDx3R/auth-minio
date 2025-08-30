@@ -17,7 +17,7 @@ from common.infrastructure.services.clock import FixedClock
 
 
 @pytest.mark.asyncio
-class TestJWTTokenIssuer:
+class TestJWTTokenIntrospector:
     @pytest.fixture(autouse=True)
     def setup(self):
         self.user_id = uuid4()

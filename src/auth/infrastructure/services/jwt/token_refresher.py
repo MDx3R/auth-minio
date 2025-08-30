@@ -1,11 +1,16 @@
 from auth.application.dtos.models.token import TokenPair
-from auth.application.exceptions import TokenExpiredError, TokenRevokedError
+from auth.application.exceptions import (
+    InvalidTokenError,
+    TokenExpiredError,
+    TokenRevokedError,
+)
 from auth.application.interfaces.repositories.token_repository import (
     IRefreshTokenRepository,
 )
 from auth.application.interfaces.services.token_service import ITokenRefresher
 from auth.infrastructure.services.jwt.token_issuer import JWTTokenIssuer
 from auth.infrastructure.services.jwt.token_revoker import JWTTokenRevoker
+from common.application.exceptions import NotFoundError
 from common.domain.clock import IClock
 
 
@@ -23,7 +28,10 @@ class JWTTokenRefresher(ITokenRefresher):
         self.refresh_token_repository = refresh_token_repository
 
     async def refresh_tokens(self, refresh_token: str) -> TokenPair:
-        token = await self.refresh_token_repository.get(refresh_token)
+        try:
+            token = await self.refresh_token_repository.get(refresh_token)
+        except NotFoundError as e:
+            raise InvalidTokenError from e
         if token.is_expired(self.clock.now().value):
             raise TokenExpiredError()
         if token.is_revoked():
