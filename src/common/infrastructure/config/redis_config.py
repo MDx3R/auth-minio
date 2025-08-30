@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 
 class RedisConfig(BaseModel):
@@ -7,7 +7,9 @@ class RedisConfig(BaseModel):
     db: int = 0
     password: str | None = None
 
-    @property
-    def redis_url(self) -> str:
-        auth = f":{self.password}@" if self.password else ""
-        return f"redis://{auth}{self.host}:{self.port}/{self.db}"
+    @field_validator("password", mode="after")
+    @classmethod
+    def password_to_none(cls, v: str | None):
+        if not v:
+            return None
+        return v
