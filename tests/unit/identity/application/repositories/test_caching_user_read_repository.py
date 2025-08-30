@@ -19,7 +19,6 @@ class TestCachingUserReadModelRepository:
     def setup(self):
         self.user_read_repository = Mock(spec=IUserReadRepository)
         self.key_value_cache = Mock(spec=KeyValueCache)
-        self.ttl = 300
 
         self.repository = CachingUserReadRepository(
             self.user_read_repository, self.key_value_cache
