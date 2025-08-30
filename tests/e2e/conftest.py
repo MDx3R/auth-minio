@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 
 from common.infrastructure.app.app import App
+from common.infrastructure.database.redis.redis import RedisDatabase
 from common.infrastructure.database.sqlalchemy.database import Database
 from common.infrastructure.database.sqlalchemy.models.base import Base
 
@@ -25,6 +26,14 @@ async def database(app: App):
     db: Database = Database.create(app.get_config().db)
     yield db
     await db.truncate_database(Base.metadata)
+    await db.shutdown()
+
+
+@pytest_asyncio.fixture(autouse=True)
+async def redis(app: App):
+    db: RedisDatabase = RedisDatabase.create(app.get_config().redis)
+    yield db
+    await db.flush_db()
     await db.shutdown()
 
 

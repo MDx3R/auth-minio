@@ -7,6 +7,7 @@ from auth.infrastructure.di.container.container import (
 )
 from common.infrastructure.app.app import App
 from common.infrastructure.config.config import AppConfig
+from common.infrastructure.database.redis.redis import RedisDatabase
 from common.infrastructure.database.sqlalchemy.database import Database
 from common.infrastructure.di.container.container import CommonContainer
 from common.infrastructure.logger.logging.logger_factory import LoggerFactory
@@ -36,12 +37,18 @@ def main():
     storage = MinioStorage.create(config.s3)
     logger.info("MinIO storage initialized")
 
+    # Database
+    logger.info("initializing Redis...")
+    redis = RedisDatabase.create(config.redis)
+    logger.info("redis initialized")
+
     # Server
     logger.info("setting up FastAPI server...")
     server = FastAPIServer(logger)
     server.on_start_up(storage.ensure_bucket)
     server.on_tear_down(database.shutdown)
     server.on_tear_down(storage.shutdown)
+    server.on_tear_down(redis.shutdown)
     logger.info("FastAPI server setup complete")
 
     common_container = CommonContainer(config=config, database=database)
@@ -50,16 +57,23 @@ def main():
     clock = common_container.clock
 
     identity_container = IdentityContainer(
-        uuid_generator=uuid_generator, query_executor=query_executor
+        ttl=300,
+        namespace="user",
+        uuid_generator=uuid_generator,
+        query_executor=query_executor,
+        redis=redis,
     )
     user_repository = identity_container.user_repository
 
     token_container = TokenContainer(
+        ttl=300,
+        namespace="user",
         auth_config=config.auth,
         clock=clock,
         uuid_generator=uuid_generator,
         token_generator=common_container.token_generator,
         query_executor=query_executor,
+        redis=redis,
         user_repository=user_repository,
     )
 

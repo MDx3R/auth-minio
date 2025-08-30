@@ -10,12 +10,12 @@ class RedisDatabase:
         self._redis = redis
 
     @classmethod
-    async def create(cls, config: RedisConfig) -> Self:
-        redis = await cls.create_redis_client(config)
+    def create(cls, config: RedisConfig) -> Self:
+        redis = cls.create_redis_client(config)
         return cls(redis=redis)
 
     @staticmethod
-    async def create_redis_client(config: RedisConfig) -> Redis:
+    def create_redis_client(config: RedisConfig) -> Redis:
         return Redis(
             host=config.host,
             port=config.port,
@@ -26,6 +26,9 @@ class RedisDatabase:
 
     def get_client(self) -> Redis:
         return self._redis
+
+    async def flush_db(self) -> None:
+        await self._redis.flushdb()  # type: ignore
 
     async def shutdown(self) -> None:
         await self._redis.aclose()
