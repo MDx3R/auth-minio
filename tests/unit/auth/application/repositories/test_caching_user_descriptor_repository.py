@@ -9,7 +9,7 @@ from auth.application.interfaces.repositories.descriptor_repository import (
 from auth.application.repositories.caching_descriptor_repository import (
     CachingUserDescriptorRepository,
 )
-from common.application.repositories.key_value_cache import KeyValueCache
+from common.application.repositories.key_value_cache import IKeyValueCache
 from identity.domain.value_objects.descriptor import UserDescriptor
 
 
@@ -18,7 +18,7 @@ class TestCachingUserDescriptorRepository:
     @pytest.fixture(autouse=True)
     def setup(self):
         self.user_descriptor_repository = Mock(spec=IUserDescriptorRepository)
-        self.key_value_cache = Mock(spec=KeyValueCache)
+        self.key_value_cache = Mock(spec=IKeyValueCache)
 
         self.repository = CachingUserDescriptorRepository(
             self.user_descriptor_repository, self.key_value_cache

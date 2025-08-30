@@ -3,7 +3,7 @@ from uuid import UUID
 from auth.application.interfaces.repositories.descriptor_repository import (
     IUserDescriptorRepository,
 )
-from common.application.repositories.key_value_cache import KeyValueCache
+from common.application.repositories.key_value_cache import IKeyValueCache
 from identity.domain.value_objects.descriptor import UserDescriptor
 
 
@@ -11,7 +11,7 @@ class CachingUserDescriptorRepository(IUserDescriptorRepository):
     def __init__(
         self,
         user_descriptor_repository: IUserDescriptorRepository,
-        key_value_cache: KeyValueCache[UserDescriptor],
+        key_value_cache: IKeyValueCache[UserDescriptor],
     ) -> None:
         self.user_descriptor_repository = user_descriptor_repository
         self.key_value_cache = key_value_cache

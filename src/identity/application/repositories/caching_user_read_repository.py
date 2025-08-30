@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from common.application.repositories.key_value_cache import KeyValueCache
+from common.application.repositories.key_value_cache import IKeyValueCache
 from identity.application.interfaces.repositories.user_read_repository import (
     IUserReadRepository,
 )
@@ -11,7 +11,7 @@ class CachingUserReadRepository(IUserReadRepository):
     def __init__(
         self,
         user_read_repository: IUserReadRepository,
-        key_value_cache: KeyValueCache[UserReadModel],
+        key_value_cache: IKeyValueCache[UserReadModel],
     ) -> None:
         self.user_read_repository = user_read_repository
         self.key_value_cache = key_value_cache

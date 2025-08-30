@@ -3,7 +3,7 @@ from uuid import uuid4
 
 import pytest
 
-from common.application.repositories.key_value_cache import KeyValueCache
+from common.application.repositories.key_value_cache import IKeyValueCache
 from identity.application.interfaces.repositories.user_read_repository import (
     IUserReadRepository,
 )
@@ -18,7 +18,7 @@ class TestCachingUserReadModelRepository:
     @pytest.fixture(autouse=True)
     def setup(self):
         self.user_read_repository = Mock(spec=IUserReadRepository)
-        self.key_value_cache = Mock(spec=KeyValueCache)
+        self.key_value_cache = Mock(spec=IKeyValueCache)
 
         self.repository = CachingUserReadRepository(
             self.user_read_repository, self.key_value_cache
