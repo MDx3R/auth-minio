@@ -1,5 +1,8 @@
 from dependency_injector import containers, providers
 
+from auth.application.repositories.descriptor_repository import (
+    UserDescriptorRepository,
+)
 from auth.application.usecases.command.login_use_case import LoginUseCase
 from auth.application.usecases.command.logout_use_case import LogoutUseCase
 from auth.application.usecases.command.refresh_token_use_case import (
@@ -7,9 +10,6 @@ from auth.application.usecases.command.refresh_token_use_case import (
 )
 from auth.application.usecases.command.register_user_use_case import (
     RegisterUserUseCase,
-)
-from auth.infrastructure.database.repositories.descriptor_repository import (
-    UserDescriptorRepository,
 )
 from auth.infrastructure.database.sqlalchemy.repositories.refresh_token_repository import (
     RefreshTokenRepository,
