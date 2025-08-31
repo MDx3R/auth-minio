@@ -1,11 +1,7 @@
 import asyncio
-import logging
-import signal
 
 from auth.infrastructure.app.app import TokenGRPCApp
-from auth.infrastructure.di.container.container import (
-    TokenContainer,
-)
+from auth.infrastructure.di.container.container import TokenContainer
 from common.infrastructure.config.config import AppConfig
 from common.infrastructure.database.redis.redis import RedisDatabase
 from common.infrastructure.database.sqlalchemy.database import Database
@@ -16,29 +12,24 @@ from common.infrastructure.server.grpc.server import GRPCServer
 from identity.infrastructure.di.container.container import IdentityContainer
 
 
-def create_grpc_app():
+async def main():
     config = AppConfig.load()
 
     logger = LoggerFactory.create(None, config)
     logger.info("logger initialized")
-
     log_config(logger, config)
 
     # Database
     logger.info("initializing database...")
-    database = Database.create(config.db)
+    database = Database.create(config.db, logger)
     logger.info("database initialized")
 
-    # Database
+    # Redis
     logger.info("initializing Redis...")
-    redis = RedisDatabase.create(config.redis)
+    redis = RedisDatabase.create(config.redis, logger)
     logger.info("redis initialized")
 
-    # Server
-    logger.info("setting up gRPC server...")
-    server = GRPCServer(logger, config.grpc)
-    logger.info("gRPC server setup complete")
-
+    # Containers
     common_container = CommonContainer(config=config, database=database)
     uuid_generator = common_container.uuid_generator
     query_executor = common_container.query_executor
@@ -65,35 +56,27 @@ def create_grpc_app():
         user_repository=user_repository,
     )
 
-    logger.info("building application...")
+    # Server
+    server = GRPCServer(logger, config.grpc)
     app = TokenGRPCApp(token_container, server, logger)
     app.configure()
-    logger.info("application initialized")
 
-    return app
-
-
-async def serve(server: GRPCServer, logger: logging.Logger):
-    logger.info("auth gRPC service is starting")
-    await server.get_server().start()
-    logger.info("auth gRPC service is running")
-
-    stop_event = asyncio.Event()
-
-    def shutdown():
-        logger.info("received stop signal, shutting down...")
-        stop_event.set()
-
-    loop = asyncio.get_running_loop()
-    loop.add_signal_handler(signal.SIGTERM, shutdown)
-    loop.add_signal_handler(signal.SIGINT, shutdown)
-
-    await stop_event.wait()
-
-    await server.stop()
-    logger.info("gRPC server stopped gracefully.")
+    try:
+        await server.start()
+    except Exception as e:
+        logger.exception(f"fatal error: {e}")
+        raise
+    finally:
+        # shutdown resources before loop closes
+        logger.info("stopping all resources...")
+        await database.shutdown()
+        await redis.shutdown()
+        await server.stop()
+        logger.info("all resources stopped gracefully")
 
 
 if __name__ == "__main__":
-    app = create_grpc_app()
-    asyncio.run(serve(app.get_server(), app.get_logger()))
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        pass

@@ -84,7 +84,7 @@ def run_migrations_online() -> None:
 
     """
 
-    database = Database.create(cfg.db)
+    database = Database.create(cfg.db, logger)
     connectable: AsyncEngine = database.get_engine()
 
     logger.info("running migrations online using AsyncEngine")

@@ -29,7 +29,7 @@ def main():
 
     # Database
     logger.info("initializing database...")
-    database = Database.create(config.db)
+    database = Database.create(config.db, logger)
     logger.info("database initialized")
 
     # MinIO
@@ -39,7 +39,7 @@ def main():
 
     # Database
     logger.info("initializing Redis...")
-    redis = RedisDatabase.create(config.redis)
+    redis = RedisDatabase.create(config.redis, logger)
     logger.info("redis initialized")
 
     # Server

@@ -1,3 +1,4 @@
+import logging
 from typing import Self
 
 from sqlalchemy import MetaData, text
@@ -12,13 +13,19 @@ from common.infrastructure.database.sqlalchemy.session_factory import MAKER
 
 
 class Database:
-    def __init__(self, engine: AsyncEngine):
+    def __init__(self, engine: AsyncEngine, logger: logging.Logger):
         self._engine = engine
+        self._logger = logger
         self._create_session_maker()
 
     @classmethod
-    def create(cls, config: DatabaseConfig) -> Self:
-        return cls(engine=cls.create_engine(config))
+    def create(
+        cls, config: DatabaseConfig, logger: logging.Logger | None = None
+    ) -> Self:
+        return cls(
+            engine=cls.create_engine(config),
+            logger=logger or logging.getLogger(),
+        )
 
     @staticmethod
     def create_engine(config: DatabaseConfig) -> AsyncEngine:
@@ -49,4 +56,6 @@ class Database:
             await conn.execute(stmt)
 
     async def shutdown(self) -> None:
+        self._logger.info("disposing database engine...")
         await self._engine.dispose()
+        self._logger.info("database engine disposed gracefully")
