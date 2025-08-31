@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package auth;
+
+import "google/protobuf/empty.proto";
+
+message IssueTokensRequest {
+    string user_id = 1;
+}
+
+message RefreshTokensRequest {
+    string refresh_token = 1;
+}
+
+message IntrospectTokenRequest {
+    string access_token = 1;
+}
+
+message RevokeTokenRequest {
+    string refresh_token = 1;
+}
+
+message AuthResponse {
+    string user_id = 1;
+    string access_token = 2;
+    string refresh_token = 3;
+}
+
+message IntrospectionResponse {
+    string user_id = 1;
+    string username = 2;
+}
+
+service AuthService {
+    rpc IssueTokens (IssueTokensRequest) returns (AuthResponse);
+    rpc RefreshTokens (RefreshTokensRequest) returns (AuthResponse);
+    rpc RevokeToken (RevokeTokenRequest) returns (google.protobuf.Empty); 
+    rpc IntrospectToken (IntrospectTokenRequest) returns (IntrospectionResponse); 
+}

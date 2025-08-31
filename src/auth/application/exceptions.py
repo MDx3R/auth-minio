@@ -26,5 +26,5 @@ class TokenRevokedError(ApplicationError):
 
 
 class InvalidTokenError(ApplicationError):
-    def __init__(self, message: str | None = None) -> None:
-        super().__init__(message or "Invalid token")
+    def __init__(self, message: str = "Invalid token") -> None:
+        super().__init__(message)
