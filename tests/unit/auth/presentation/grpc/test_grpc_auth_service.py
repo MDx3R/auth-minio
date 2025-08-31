@@ -3,7 +3,6 @@ from uuid import uuid4
 
 import grpc
 import pytest
-from google.protobuf import empty_pb2
 from grpc import StatusCode
 
 from auth.application.dtos.models.auth_tokens import AuthTokens
@@ -135,7 +134,7 @@ class TestAsyncAuthServiceServicer:
         response = await self.servicer.RevokeToken(request, self.context)
 
         # Assert
-        assert isinstance(response, empty_pb2.Empty)
+        assert isinstance(response, auth_pb2.Empty)
         self.token_revoker.revoke_refresh_token.assert_awaited_once_with(
             "refresh_token"
         )

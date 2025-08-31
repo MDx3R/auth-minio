@@ -2,7 +2,6 @@ from typing import Any
 from uuid import UUID
 
 import grpc
-from google.protobuf import empty_pb2
 
 from auth.application.exceptions import (
     InvalidTokenError,
@@ -73,7 +72,7 @@ class AsyncAuthServiceServicer(auth_pb2_grpc.AuthServiceServicer):
             await self.token_revoker.revoke_refresh_token(
                 request.refresh_token
             )
-            return empty_pb2.Empty()
+            return auth_pb2.Empty()
         except Exception as e:
             await self.handle_grpc_error(context, e)
 

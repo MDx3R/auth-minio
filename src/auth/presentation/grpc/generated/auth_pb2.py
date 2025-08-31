@@ -22,7 +22,7 @@ _sym_db = _symbol_database.Default()
 
 
 DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(
-    b'\n\nauth.proto\x12 auth.presentation.grpc.generated\x1a\x1bgoogle/protobuf/empty.proto"%\n\x12IssueTokensRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t"-\n\x14RefreshTokensRequest\x12\x15\n\rrefresh_token\x18\x01 \x01(\t".\n\x16IntrospectTokenRequest\x12\x14\n\x0c\x61\x63\x63\x65ss_token\x18\x01 \x01(\t"+\n\x12RevokeTokenRequest\x12\x15\n\rrefresh_token\x18\x01 \x01(\t"L\n\x0c\x41uthResponse\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x14\n\x0c\x61\x63\x63\x65ss_token\x18\x02 \x01(\t\x12\x15\n\rrefresh_token\x18\x03 \x01(\t":\n\x15IntrospectionResponse\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x10\n\x08username\x18\x02 \x01(\t2\xdf\x03\n\x0b\x41uthService\x12s\n\x0bIssueTokens\x12\x34.auth.presentation.grpc.generated.IssueTokensRequest\x1a..auth.presentation.grpc.generated.AuthResponse\x12w\n\rRefreshTokens\x12\x36.auth.presentation.grpc.generated.RefreshTokensRequest\x1a..auth.presentation.grpc.generated.AuthResponse\x12[\n\x0bRevokeToken\x12\x34.auth.presentation.grpc.generated.RevokeTokenRequest\x1a\x16.google.protobuf.Empty\x12\x84\x01\n\x0fIntrospectToken\x12\x38.auth.presentation.grpc.generated.IntrospectTokenRequest\x1a\x37.auth.presentation.grpc.generated.IntrospectionResponseb\x06proto3'
+    b'\n\nauth.proto\x12\x04\x61uth"\x07\n\x05\x45mpty"%\n\x12IssueTokensRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t"-\n\x14RefreshTokensRequest\x12\x15\n\rrefresh_token\x18\x01 \x01(\t".\n\x16IntrospectTokenRequest\x12\x14\n\x0c\x61\x63\x63\x65ss_token\x18\x01 \x01(\t"+\n\x12RevokeTokenRequest\x12\x15\n\rrefresh_token\x18\x01 \x01(\t"L\n\x0c\x41uthResponse\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x14\n\x0c\x61\x63\x63\x65ss_token\x18\x02 \x01(\t\x12\x15\n\rrefresh_token\x18\x03 \x01(\t":\n\x15IntrospectionResponse\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x10\n\x08username\x18\x02 \x01(\t2\x8f\x02\n\x0b\x41uthService\x12;\n\x0bIssueTokens\x12\x18.auth.IssueTokensRequest\x1a\x12.auth.AuthResponse\x12?\n\rRefreshTokens\x12\x1a.auth.RefreshTokensRequest\x1a\x12.auth.AuthResponse\x12\x34\n\x0bRevokeToken\x12\x18.auth.RevokeTokenRequest\x1a\x0b.auth.Empty\x12L\n\x0fIntrospectToken\x12\x1c.auth.IntrospectTokenRequest\x1a\x1b.auth.IntrospectionResponseb\x06proto3'
 )
 
 _globals = globals()
@@ -30,18 +30,20 @@ _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, "auth_pb2", _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
     DESCRIPTOR._loaded_options = None
-    _globals["_ISSUETOKENSREQUEST"]._serialized_start = 77
-    _globals["_ISSUETOKENSREQUEST"]._serialized_end = 114
-    _globals["_REFRESHTOKENSREQUEST"]._serialized_start = 116
-    _globals["_REFRESHTOKENSREQUEST"]._serialized_end = 161
-    _globals["_INTROSPECTTOKENREQUEST"]._serialized_start = 163
-    _globals["_INTROSPECTTOKENREQUEST"]._serialized_end = 209
-    _globals["_REVOKETOKENREQUEST"]._serialized_start = 211
-    _globals["_REVOKETOKENREQUEST"]._serialized_end = 254
-    _globals["_AUTHRESPONSE"]._serialized_start = 256
-    _globals["_AUTHRESPONSE"]._serialized_end = 332
-    _globals["_INTROSPECTIONRESPONSE"]._serialized_start = 334
-    _globals["_INTROSPECTIONRESPONSE"]._serialized_end = 392
-    _globals["_AUTHSERVICE"]._serialized_start = 395
-    _globals["_AUTHSERVICE"]._serialized_end = 874
+    _globals["_EMPTY"]._serialized_start = 20
+    _globals["_EMPTY"]._serialized_end = 27
+    _globals["_ISSUETOKENSREQUEST"]._serialized_start = 29
+    _globals["_ISSUETOKENSREQUEST"]._serialized_end = 66
+    _globals["_REFRESHTOKENSREQUEST"]._serialized_start = 68
+    _globals["_REFRESHTOKENSREQUEST"]._serialized_end = 113
+    _globals["_INTROSPECTTOKENREQUEST"]._serialized_start = 115
+    _globals["_INTROSPECTTOKENREQUEST"]._serialized_end = 161
+    _globals["_REVOKETOKENREQUEST"]._serialized_start = 163
+    _globals["_REVOKETOKENREQUEST"]._serialized_end = 206
+    _globals["_AUTHRESPONSE"]._serialized_start = 208
+    _globals["_AUTHRESPONSE"]._serialized_end = 284
+    _globals["_INTROSPECTIONRESPONSE"]._serialized_start = 286
+    _globals["_INTROSPECTIONRESPONSE"]._serialized_end = 344
+    _globals["_AUTHSERVICE"]._serialized_start = 347
+    _globals["_AUTHSERVICE"]._serialized_end = 618
 # @@protoc_insertion_point(module_scope)

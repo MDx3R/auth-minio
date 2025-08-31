@@ -3,7 +3,6 @@
 """Client and server classes corresponding to protobuf-defined services."""
 
 import grpc
-from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 
 import auth.presentation.grpc.generated.auth_pb2 as auth__pb2
 
@@ -41,25 +40,25 @@ class AuthServiceStub:
             channel: A grpc.Channel.
         """
         self.IssueTokens = channel.unary_unary(
-            "/auth.presentation.grpc.generated.AuthService/IssueTokens",
+            "/auth.AuthService/IssueTokens",
             request_serializer=auth__pb2.IssueTokensRequest.SerializeToString,
             response_deserializer=auth__pb2.AuthResponse.FromString,
             _registered_method=True,
         )
         self.RefreshTokens = channel.unary_unary(
-            "/auth.presentation.grpc.generated.AuthService/RefreshTokens",
+            "/auth.AuthService/RefreshTokens",
             request_serializer=auth__pb2.RefreshTokensRequest.SerializeToString,
             response_deserializer=auth__pb2.AuthResponse.FromString,
             _registered_method=True,
         )
         self.RevokeToken = channel.unary_unary(
-            "/auth.presentation.grpc.generated.AuthService/RevokeToken",
+            "/auth.AuthService/RevokeToken",
             request_serializer=auth__pb2.RevokeTokenRequest.SerializeToString,
-            response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+            response_deserializer=auth__pb2.Empty.FromString,
             _registered_method=True,
         )
         self.IntrospectToken = channel.unary_unary(
-            "/auth.presentation.grpc.generated.AuthService/IntrospectToken",
+            "/auth.AuthService/IntrospectToken",
             request_serializer=auth__pb2.IntrospectTokenRequest.SerializeToString,
             response_deserializer=auth__pb2.IntrospectionResponse.FromString,
             _registered_method=True,
@@ -109,7 +108,7 @@ def add_AuthServiceServicer_to_server(servicer, server):
         "RevokeToken": grpc.unary_unary_rpc_method_handler(
             servicer.RevokeToken,
             request_deserializer=auth__pb2.RevokeTokenRequest.FromString,
-            response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+            response_serializer=auth__pb2.Empty.SerializeToString,
         ),
         "IntrospectToken": grpc.unary_unary_rpc_method_handler(
             servicer.IntrospectToken,
@@ -118,11 +117,11 @@ def add_AuthServiceServicer_to_server(servicer, server):
         ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-        "auth.presentation.grpc.generated.AuthService", rpc_method_handlers
+        "auth.AuthService", rpc_method_handlers
     )
     server.add_generic_rpc_handlers((generic_handler,))
     server.add_registered_method_handlers(
-        "auth.presentation.grpc.generated.AuthService", rpc_method_handlers
+        "auth.AuthService", rpc_method_handlers
     )
 
 
@@ -146,7 +145,7 @@ class AuthService:
         return grpc.experimental.unary_unary(
             request,
             target,
-            "/auth.presentation.grpc.generated.AuthService/IssueTokens",
+            "/auth.AuthService/IssueTokens",
             auth__pb2.IssueTokensRequest.SerializeToString,
             auth__pb2.AuthResponse.FromString,
             options,
@@ -176,7 +175,7 @@ class AuthService:
         return grpc.experimental.unary_unary(
             request,
             target,
-            "/auth.presentation.grpc.generated.AuthService/RefreshTokens",
+            "/auth.AuthService/RefreshTokens",
             auth__pb2.RefreshTokensRequest.SerializeToString,
             auth__pb2.AuthResponse.FromString,
             options,
@@ -206,9 +205,9 @@ class AuthService:
         return grpc.experimental.unary_unary(
             request,
             target,
-            "/auth.presentation.grpc.generated.AuthService/RevokeToken",
+            "/auth.AuthService/RevokeToken",
             auth__pb2.RevokeTokenRequest.SerializeToString,
-            google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+            auth__pb2.Empty.FromString,
             options,
             channel_credentials,
             insecure,
@@ -236,7 +235,7 @@ class AuthService:
         return grpc.experimental.unary_unary(
             request,
             target,
-            "/auth.presentation.grpc.generated.AuthService/IntrospectToken",
+            "/auth.AuthService/IntrospectToken",
             auth__pb2.IntrospectTokenRequest.SerializeToString,
             auth__pb2.IntrospectionResponse.FromString,
             options,
