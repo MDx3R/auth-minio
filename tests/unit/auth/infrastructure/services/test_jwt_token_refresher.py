@@ -4,6 +4,7 @@ from uuid import uuid4
 
 import pytest
 
+from auth.application.dtos.models.auth_tokens import AuthTokens
 from auth.application.exceptions import (
     InvalidTokenError,
     TokenExpiredError,
@@ -29,8 +30,8 @@ class TestJWTTokenRefresher:
         self.token_revoker = Mock(spec=JWTTokenRevoker)
         self.clock = FixedClock(datetime(2025, 7, 22))
 
-        self.pair = Mock()
-        self.token_issuer.issue_tokens.return_value = self.pair
+        self.tokens = AuthTokens(self.user_id, "access_token", "refresh_token")
+        self.token_issuer.issue_tokens.return_value = self.tokens
 
         self.token = Mock()
         self.token.is_expired.return_value = False
@@ -50,7 +51,8 @@ class TestJWTTokenRefresher:
     async def test_refresh_valid_token(self):
         result = await self.refresher.refresh_tokens("refresh-token")
 
-        assert result == self.pair
+        assert isinstance(result, AuthTokens)
+        assert result == self.tokens
 
         self.token_revoker.revoke_refresh_token.assert_awaited_once()
         self.token_issuer.issue_tokens.assert_awaited_once_with(self.user_id)

@@ -1,18 +1,18 @@
 from abc import ABC, abstractmethod
 from uuid import UUID
 
-from auth.application.dtos.models.token import TokenPair
+from auth.application.dtos.models.auth_tokens import AuthTokens
 from identity.domain.value_objects.descriptor import UserDescriptor
 
 
 class ITokenIssuer(ABC):
     @abstractmethod
-    async def issue_tokens(self, user_id: UUID) -> TokenPair: ...
+    async def issue_tokens(self, user_id: UUID) -> AuthTokens: ...
 
 
 class ITokenRefresher(ABC):
     @abstractmethod
-    async def refresh_tokens(self, refresh_token: str) -> TokenPair: ...
+    async def refresh_tokens(self, refresh_token: str) -> AuthTokens: ...
 
 
 class ITokenIntrospector(ABC):

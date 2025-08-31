@@ -36,10 +36,8 @@ class TestLoginUseCase:
 
         self.token_issuer = Mock(spec=ITokenIssuer)
 
-        self.token_pair = Mock()
-        self.token_pair.access.value = "access_token"
-        self.token_pair.refresh.value = "refresh_token"
-        self.token_issuer.issue_tokens.return_value = self.token_pair
+        self.tokens = AuthTokens(self.user_id, "access_token", "refresh_token")
+        self.token_issuer.issue_tokens.return_value = self.tokens
 
         self.command = LoginCommand(
             username=self.user.username, password="correct_password"

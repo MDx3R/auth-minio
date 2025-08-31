@@ -35,7 +35,4 @@ class LoginUseCase(ILoginUseCase):
         if not self.password_hasher.verify(command.password, user.password):
             raise InvalidPasswordError(user.user_id)
 
-        token_pair = await self.token_issuer.issue_tokens(user.user_id)
-        return AuthTokens.create(
-            user.user_id, token_pair.access.value, token_pair.refresh.value
-        )
+        return await self.token_issuer.issue_tokens(user.user_id)

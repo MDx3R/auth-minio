@@ -13,12 +13,4 @@ class RefreshTokenUseCase(IRefreshTokenUseCase):
         self.token_refresher = token_refresher
 
     async def execute(self, command: RefreshTokenCommand) -> AuthTokens:
-        token_pair = await self.token_refresher.refresh_tokens(
-            command.refresh_token
-        )
-
-        return AuthTokens.create(
-            token_pair.refresh.user_id,
-            token_pair.access.value,
-            token_pair.refresh.value,
-        )
+        return await self.token_refresher.refresh_tokens(command.refresh_token)

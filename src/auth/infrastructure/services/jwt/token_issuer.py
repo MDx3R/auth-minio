@@ -4,7 +4,8 @@ from uuid import UUID
 
 from jose import jwt
 
-from auth.application.dtos.models.token import Token, TokenPair, TokenTypeEnum
+from auth.application.dtos.models.auth_tokens import AuthTokens
+from auth.application.dtos.models.token import Token, TokenTypeEnum
 from auth.application.interfaces.repositories.token_repository import (
     IRefreshTokenRepository,
 )
@@ -31,13 +32,13 @@ class JWTTokenIssuer(ITokenIssuer):
         self.uuid_generator = uuid_generator
         self.refresh_token_repository = refresh_token_repository
 
-    async def issue_tokens(self, user_id: UUID) -> TokenPair:
+    async def issue_tokens(self, user_id: UUID) -> AuthTokens:
         access = self.issue_access_token(user_id)
         refresh = self.issue_refresh_token(user_id)
 
         await self.refresh_token_repository.add(refresh)
 
-        return TokenPair.create(access, refresh)
+        return AuthTokens.create(user_id, access.value, refresh.value)
 
     def issue_access_token(self, user_id: UUID) -> Token:
         issued_at = self.clock.now().value

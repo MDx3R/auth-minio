@@ -4,6 +4,7 @@ from uuid import uuid4
 
 import pytest
 
+from auth.application.dtos.models.auth_tokens import AuthTokens
 from auth.application.dtos.models.token import TokenTypeEnum
 from auth.application.interfaces.repositories.token_repository import (
     IRefreshTokenRepository,
@@ -67,7 +68,17 @@ class TestJWTTokenIssuer:
 
         tokens = await self.issuer.issue_tokens(user_id)
 
-        assert tokens.access == self.issuer.issue_access_token(user_id)
-        assert tokens.refresh == self.issuer.issue_refresh_token(user_id)
+        assert isinstance(tokens, AuthTokens)
+        assert tokens.user_id == user_id
+        assert (
+            tokens.access_token
+            == self.issuer.issue_access_token(user_id).value
+        )
+        assert (
+            tokens.refresh_token
+            == self.issuer.issue_refresh_token(user_id).value
+        )
 
-        self.refresh_token_repo.add.assert_awaited_once_with(tokens.refresh)
+        self.refresh_token_repo.add.assert_awaited_once_with(
+            self.issuer.issue_refresh_token(user_id)
+        )

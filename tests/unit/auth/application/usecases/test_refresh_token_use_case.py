@@ -1,4 +1,5 @@
 from unittest.mock import AsyncMock, Mock
+from uuid import uuid4
 
 import pytest
 
@@ -16,13 +17,11 @@ from auth.application.usecases.command.refresh_token_use_case import (
 class TestRefreshTokenUseCase:
     @pytest.fixture(autouse=True)
     def setup(self):
-        self.token_pair = Mock()
-        self.token_pair.access.value = "access_token"
-        self.token_pair.refresh.value = "refresh_token"
+        self.tokens = AuthTokens(uuid4(), "access_token", "new_refresh_token")
 
         self.token_refresher = Mock(spec=ITokenRefresher)
         self.token_refresher.refresh_tokens = AsyncMock(
-            return_value=self.token_pair
+            return_value=self.tokens
         )
 
         self.command = RefreshTokenCommand(refresh_token="refresh_token")
@@ -33,7 +32,7 @@ class TestRefreshTokenUseCase:
 
         assert isinstance(result, AuthTokens)
         assert result.access_token == "access_token"
-        assert result.refresh_token == "refresh_token"
+        assert result.refresh_token == "new_refresh_token"
 
         self.token_refresher.refresh_tokens.assert_awaited_once_with(
             "refresh_token"

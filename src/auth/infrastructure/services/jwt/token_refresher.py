@@ -1,4 +1,4 @@
-from auth.application.dtos.models.token import TokenPair
+from auth.application.dtos.models.auth_tokens import AuthTokens
 from auth.application.exceptions import (
     InvalidTokenError,
     TokenExpiredError,
@@ -27,7 +27,7 @@ class JWTTokenRefresher(ITokenRefresher):
         self.clock = clock
         self.refresh_token_repository = refresh_token_repository
 
-    async def refresh_tokens(self, refresh_token: str) -> TokenPair:
+    async def refresh_tokens(self, refresh_token: str) -> AuthTokens:
         try:
             token = await self.refresh_token_repository.get(refresh_token)
         except NotFoundError as e:
