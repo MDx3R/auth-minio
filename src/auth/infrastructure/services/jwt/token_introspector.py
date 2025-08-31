@@ -11,6 +11,10 @@ from auth.application.interfaces.services.token_service import (
     ITokenIntrospector,
 )
 from auth.infrastructure.services.jwt.claims import TokenClaims
+from common.application.exceptions import (
+    NotFoundError,
+    RepositoryError,
+)
 from common.domain.clock import IClock
 from common.infrastructure.config.auth_config import AuthConfig
 from identity.domain.value_objects.descriptor import UserDescriptor
@@ -29,7 +33,14 @@ class JWTTokenIntrospector(ITokenIntrospector):
 
     async def extract_user(self, token: str) -> UserDescriptor:
         claims = self.decode(token)
-        return await self.user_descriptor_repository.get_by_id(claims.user_id)
+        try:
+            return await self.user_descriptor_repository.get_by_id(
+                claims.user_id
+            )
+        except NotFoundError as e:
+            raise RepositoryError(
+                f"decoded user_id {claims.user_id} is not found"
+            ) from e
 
     async def is_token_valid(self, token: str) -> bool:
         try:

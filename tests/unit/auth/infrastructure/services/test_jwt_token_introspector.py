@@ -12,6 +12,7 @@ from auth.application.interfaces.repositories.descriptor_repository import (
 from auth.infrastructure.services.jwt.token_introspector import (
     JWTTokenIntrospector,
 )
+from common.application.exceptions import NotFoundError, RepositoryError
 from common.infrastructure.config.auth_config import AuthConfig
 from common.infrastructure.services.clock import FixedClock
 
@@ -100,3 +101,10 @@ class TestJWTTokenIntrospector:
         )
         with pytest.raises(InvalidTokenError):
             await self.introspector.validate(token)
+
+    async def test_extract_user_no_user_fails(self):
+        self.user_repo.get_by_id.side_effect = NotFoundError(self.user_id)
+
+        token = self.create_valid_token()
+        with pytest.raises(RepositoryError):
+            await self.introspector.extract_user(token)
