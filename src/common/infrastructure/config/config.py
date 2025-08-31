@@ -15,6 +15,7 @@ from pydantic_settings import (
 
 from common.infrastructure.config.auth_config import AuthConfig
 from common.infrastructure.config.database_config import DatabaseConfig
+from common.infrastructure.config.grcp_config import GRPCConfig
 from common.infrastructure.config.logger_config import LoggerConfig
 from common.infrastructure.config.redis_config import RedisConfig
 from common.infrastructure.config.s3_config import S3Config
@@ -45,6 +46,7 @@ class AppConfig(BaseSettings):
     db: DatabaseConfig
     s3: S3Config
     redis: RedisConfig
+    grpc: GRPCConfig
     logger: LoggerConfig
 
     def masked_dict(self) -> dict[str, Any]:

@@ -1,3 +1,4 @@
+import logging
 from typing import ClassVar
 
 from auth.application.interfaces.services.token_service import (
@@ -108,9 +109,17 @@ class TokenGRPCApp(IApp):
         self,
         container: TokenContainer,
         server: GRPCServer,
+        logger: logging.Logger,
     ) -> None:
         self.container = container
         self.server = server
+        self.logger = logger
+
+    def get_server(self) -> GRPCServer:
+        return self.server
+
+    def get_logger(self) -> logging.Logger:
+        return self.logger
 
     def configure(self) -> None:
         servicer = AsyncAuthServiceServicer(

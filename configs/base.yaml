@@ -28,3 +28,7 @@ s3:
   access_key: "minio"
   secret_key: "minio"
   bucket_name: "photos"
+
+grpc:
+  host: "localhost"
+  port: "50001"

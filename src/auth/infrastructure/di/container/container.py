@@ -20,6 +20,12 @@ from auth.infrastructure.database.sqlalchemy.repositories.refresh_token_reposito
 from auth.infrastructure.serializers.marshmallow.shemas import (
     UserDescriptorSchema,
 )
+from auth.infrastructure.server.grpc.services.token_service import (
+    GRPCTokenIntrospector,
+    GRPCTokenIssuer,
+    GRPCTokenRefresher,
+    GRPCTokenRevoker,
+)
 from auth.infrastructure.services.bcrypt.password_hasher import (
     BcryptPasswordHasher,
 )
@@ -113,6 +119,15 @@ class TokenContainer(containers.DeclarativeContainer):
         user_descriptor_repository=caching_user_read_repository,
         clock=clock,
     )
+
+
+class GRPCTokenContainer(TokenContainer):
+    stub = providers.Dependency()
+
+    token_issuer = providers.Singleton(GRPCTokenIssuer, stub)
+    token_revoker = providers.Singleton(GRPCTokenRevoker, stub)
+    token_refresher = providers.Singleton(GRPCTokenRefresher, stub)
+    token_introspector = providers.Singleton(GRPCTokenIntrospector, stub)
 
 
 class AuthContainer(containers.DeclarativeContainer):
