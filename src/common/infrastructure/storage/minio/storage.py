@@ -6,14 +6,15 @@ from common.infrastructure.config.s3_config import S3Config
 
 
 class MinioStorage:
-    def __init__(self, client: Minio, bucket_name: str):
+    def __init__(self, client: Minio, config: S3Config):
         self._client = client
-        self._bucket_name = bucket_name
+        self._bucket_name = config.bucket_name
+        self._config = config
 
     @classmethod
     def create(cls, config: S3Config) -> Self:
         client = cls.create_client(config)
-        return cls(client=client, bucket_name=config.bucket_name)
+        return cls(client=client, config=config)
 
     @staticmethod
     def create_client(config: S3Config) -> Minio:
@@ -23,6 +24,9 @@ class MinioStorage:
             secret_key=config.secret_key,
             secure=config.secure,
         )
+
+    def get_config(self) -> S3Config:
+        return self._config
 
     def get_client(self) -> Minio:
         return self._client

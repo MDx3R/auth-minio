@@ -1,5 +1,7 @@
 from datetime import timedelta
 
+from dependency_injector import providers
+
 from auth.infrastructure.app.app import AuthApp, TokenApp
 from auth.infrastructure.di.container.container import (
     AuthContainer,
@@ -13,8 +15,11 @@ from common.infrastructure.database.sqlalchemy.database import Database
 from common.infrastructure.di.container.container import CommonContainer
 from common.infrastructure.logger.logging.logger_factory import LoggerFactory
 from common.infrastructure.logger.logging.utils import log_config
+from common.infrastructure.server.fastapi.middleware.logging_middleware import (
+    TraceMiddleware,
+)
 from common.infrastructure.server.fastapi.server import FastAPIServer
-from common.infrastructure.server.grpc.client import GRPCClient
+from common.infrastructure.server.grpc.client import GRPCClient, LazyStub
 from common.infrastructure.storage.minio.storage import MinioStorage
 from identity.infrastructure.di.container.container import IdentityContainer
 from photos.infrastructure.app.app import PhotosApp
@@ -52,6 +57,7 @@ def main():
     # Server
     logger.info("setting up FastAPI server...")
     server = FastAPIServer(logger)
+    server.on_start_up(client.connect)
     server.on_start_up(storage.ensure_bucket)
     server.on_tear_down(database.shutdown)
     server.on_tear_down(storage.shutdown)
@@ -73,7 +79,7 @@ def main():
     )
     user_repository = identity_container.user_repository
 
-    stub = auth_pb2_grpc.AuthServiceStub(client.get_channel())
+    stub = providers.Object(LazyStub(client, auth_pb2_grpc.AuthServiceStub))
     token_container = GRPCTokenContainer(
         stub=stub,
         ttl=300,
@@ -105,6 +111,8 @@ def main():
     )
 
     logger.info("building application...")
+
+    server.use_middleware(TraceMiddleware, logger=logger)
 
     app = App(config, logger, server)
     app.add_app(

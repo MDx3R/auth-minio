@@ -1,6 +1,7 @@
 import pytest
 import pytest_asyncio
-from cli.app.monolith import main
+from asgi_lifespan import LifespanManager
+from cli.services.api import main
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 
@@ -16,9 +17,11 @@ def app() -> App:
     return app
 
 
-@pytest.fixture
-def fastapi(app: App) -> FastAPI:
-    return app.get_server().get_app()
+@pytest_asyncio.fixture
+async def fastapi(app: App):
+    fastapi = app.get_server().get_app()
+    async with LifespanManager(fastapi) as manager:
+        yield manager.app
 
 
 @pytest_asyncio.fixture(autouse=True)

@@ -1,5 +1,6 @@
 import logging
 import time
+import traceback
 import uuid
 from collections.abc import Awaitable, Callable
 from typing import Any
@@ -70,4 +71,24 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         self.logger.info(
             "request completed successfully", extra={"extra": extra}
         )
+        return response
+
+
+class TraceMiddleware(BaseHTTPMiddleware):
+    def __init__(self, app: FastAPI, logger: logging.Logger):
+        super().__init__(app)
+        self.logger = logger
+
+    async def dispatch(
+        self,
+        request: Request,
+        call_next: Callable[[Request], Awaitable[Response]],
+    ) -> Response:
+        try:
+            response: Response = await call_next(request)
+        except Exception:
+            tb = traceback.format_exc()
+            self.logger.debug(f"request failed:\n{tb}")
+            raise
+
         return response

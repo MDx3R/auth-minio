@@ -19,7 +19,7 @@ db:
 
 redis:
   host: "localhost"
-  port: "6379"
+  port: 6379
   db: 0
   password: "password"
 
@@ -31,4 +31,4 @@ s3:
 
 grpc:
   host: "localhost"
-  port: "50001"
+  port: 50001
