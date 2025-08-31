@@ -58,7 +58,7 @@ class TestGRPCClientServer:
             token_revoker=self.token_revoker,
             token_introspector=self.token_introspector,
         )
-        auth_pb2_grpc.add_AuthServiceServicer_to_server(
+        auth_pb2_grpc.add_AuthServiceServicer_to_server(  # type: ignore
             self.servicer, self.server
         )
         self.port = self.server.add_insecure_port("[::]:0")  # Random port
@@ -100,7 +100,7 @@ class TestGRPCClientServer:
 
         # Act & Assert
         with pytest.raises(ValueError, match="user_id must be a valid UUID"):
-            await self.issuer.issue_tokens(invalid_uuid)
+            await self.issuer.issue_tokens(invalid_uuid)  # type: ignore
         self.token_issuer.issue_tokens.assert_not_awaited()
 
     async def test_issue_tokens_internal_error(self):

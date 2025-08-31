@@ -32,7 +32,7 @@ class App(IApp):
         self.server.use_middleware(
             ErrorHandlingMiddleware,
             handlers=[
-                RepositoryErrorHandler(),
+                RepositoryErrorHandler(),  # Must be before ApplicationErrorHandler since RepositoryError is subtype of ApplicationError
                 ApplicationErrorHandler(),
                 DomainErrorHandler(),
             ],

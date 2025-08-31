@@ -22,12 +22,16 @@ from auth.infrastructure.di.container.container import (
 from auth.infrastructure.server.fastapi.middleware.token_error_middleware import (
     TokenErrorHandler,
 )
+from auth.presentation.grpc.auth_service import AsyncAuthServiceServicer
+from auth.presentation.grpc.generated import auth_pb2_grpc
 from auth.presentation.http.fastapi.controllers import auth_router
+from common.infrastructure.app.app import IApp
 from common.infrastructure.app.http_app import IHTTPApp
 from common.infrastructure.server.fastapi.middleware.error_middleware import (
     ErrorHandlingMiddleware,
 )
 from common.infrastructure.server.fastapi.server import FastAPIServer
+from common.infrastructure.server.grpc.server import GRPCServer
 from identity.application.interfaces.usecases.query.get_self_use_case import (
     IGetSelfUseCase,
 )
@@ -97,3 +101,24 @@ class TokenApp(IHTTPApp):
 
     def register_routers(self) -> None:
         pass
+
+
+class TokenGRPCApp(IApp):
+    def __init__(
+        self,
+        container: TokenContainer,
+        server: GRPCServer,
+    ) -> None:
+        self.container = container
+        self.server = server
+
+    def configure(self) -> None:
+        servicer = AsyncAuthServiceServicer(
+            token_issuer=self.container.token_issuer(),
+            token_refresher=self.container.token_refresher(),
+            token_revoker=self.container.token_revoker(),
+            token_introspector=self.container.token_introspector(),
+        )
+        auth_pb2_grpc.add_AuthServiceServicer_to_server(  # pyright: ignore[reportUnknownMemberType]
+            servicer, self.server.get_server()
+        )

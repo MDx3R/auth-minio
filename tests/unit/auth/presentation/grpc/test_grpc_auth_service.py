@@ -60,9 +60,9 @@ class TestAsyncAuthServiceServicer:
         response = await self.servicer.IssueTokens(request, self.context)
 
         # Assert
-        assert response.user_id == str(self.user_id)
-        assert response.access_token == "access_token"
-        assert response.refresh_token == "refresh_token"
+        assert response.user_id == str(self.user_id)  # type: ignore
+        assert response.access_token == "access_token"  # type: ignore
+        assert response.refresh_token == "refresh_token"  # type: ignore
         self.token_issuer.issue_tokens.assert_awaited_once_with(self.user_id)
         self.context.abort.assert_not_called()
 
@@ -103,9 +103,9 @@ class TestAsyncAuthServiceServicer:
         response = await self.servicer.RefreshTokens(request, self.context)
 
         # Assert
-        assert response.user_id == str(self.user_id)
-        assert response.access_token == "access_token"
-        assert response.refresh_token == "refresh_token"
+        assert response.user_id == str(self.user_id)  # type: ignore
+        assert response.access_token == "access_token"  # type: ignore
+        assert response.refresh_token == "refresh_token"  # type: ignore
         self.token_refresher.refresh_tokens.assert_awaited_once_with(
             "refresh_token"
         )
@@ -167,8 +167,8 @@ class TestAsyncAuthServiceServicer:
         response = await self.servicer.IntrospectToken(request, self.context)
 
         # Assert
-        assert response.user_id == str(self.user_id)
-        assert response.username == "testuser"
+        assert response.user_id == str(self.user_id)  # type: ignore
+        assert response.username == "testuser"  # type: ignore
         self.token_introspector.extract_user.assert_awaited_once_with(
             "access_token"
         )
