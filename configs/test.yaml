@@ -1,18 +1,18 @@
-env: local
+env: test
 auth:
   secret_key: "super-secret"
   algorithm: "HS256"
-  issuer: "auth-minio"
+  issuer: "my-service"
   access_token_ttl: 1800
   refresh_token_ttl: 604800
 
 logger:
-  level: "INFO"
-  format: "json"
+  level: "DEBUG"
+  format: "text"
 
 db:
-  db_name: "mydb"
-  db_user: "postgres"
+  db_name: "test_db"
+  db_user: "test_user"
   db_pass: "password"
   db_host: "postgres"
   db_port: 5432
@@ -20,7 +20,6 @@ db:
 redis:
   host: "redis"
   port: 6379
-  db: 0
   password: null
 
 s3:
@@ -31,4 +30,3 @@ s3:
 
 grpc:
   host: "auth"
-  port: 50001
