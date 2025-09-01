@@ -1,0 +1,34 @@
+env: local
+auth:
+  secret_key: "super-secret"
+  algorithm: "HS256"
+  issuer: "auth-minio"
+  access_token_ttl: 1800
+  refresh_token_ttl: 604800
+
+logger:
+  level: "INFO"
+  format: "json"
+
+db:
+  db_name: "mydb"
+  db_user: "postgres"
+  db_pass: "password"
+  db_host: "localhost"
+  db_port: 5432
+
+redis:
+  host: "localhost"
+  port: 6379
+  db: 0
+  password: null
+
+s3:
+  endpoint: "localhost:9000"
+  access_key: "minioadmin"
+  secret_key: "minioadmin"
+  bucket_name: "photos"
+
+grpc:
+  host: "localhost"
+  port: 50001
